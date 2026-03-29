@@ -97,6 +97,19 @@ body{
 
 .secondary{
   background:#f1f5f9;
+  color:#142133;
+}
+
+/* OVERLAY */
+#overlay{
+  position:fixed;
+  top:0;
+  left:0;
+  width:100%;
+  height:100%;
+  background:rgba(0,0,0,0.25);
+  display:none;
+  z-index:998;
 }
 
 /* CABINET */
@@ -107,10 +120,13 @@ body{
   width:280px;
   height:100%;
   background:white;
-  box-shadow:-4px 0 20px rgba(0,0,0,0.12);
+  box-shadow:-8px 0 30px rgba(0,0,0,0.15);
   padding:20px;
-  transition:0.3s;
+  transition:0.3s ease;
   z-index:999;
+  border-top-left-radius:12px;
+  border-bottom-left-radius:12px;
+  box-sizing:border-box;
 }
 
 #cabinet a{
@@ -119,6 +135,20 @@ body{
   text-decoration:none;
   color:#142133;
   font-weight:600;
+}
+
+#cabinet hr{
+  margin:18px 0;
+  border:none;
+  border-top:1px solid #e5e7eb;
+}
+
+.close-btn{
+  margin-bottom:16px;
+  background:none;
+  border:none;
+  font-size:20px;
+  cursor:pointer;
 }
 </style>
 </head>
@@ -136,7 +166,6 @@ body{
     </div>
   </div>
 
-  <!-- CABINET BUTTON -->
   <button onclick="toggleCabinet()" style="
     position:absolute;
     right:16px;
@@ -145,9 +174,7 @@ body{
     background:none;
     border:none;
     cursor:pointer;
-  ">
-  ☰
-  </button>
+  ">☰</button>
 </div>
 
 <!-- NAV -->
@@ -160,7 +187,6 @@ body{
 
 <!-- HERO -->
 <div class="hero">
-
   <div class="card">
     <div class="title">What do you need?</div>
 
@@ -171,13 +197,14 @@ body{
       <a href="owner/add-property.html"><div class="btn secondary">Owner tools</div></a>
     </div>
   </div>
-
 </div>
 
-<!-- CABINET PANEL -->
-<div id="cabinet">
+<!-- OVERLAY -->
+<div id="overlay" onclick="toggleCabinet()"></div>
 
-  <button onclick="toggleCabinet()" style="margin-bottom:16px;">✕</button>
+<!-- CABINET -->
+<div id="cabinet">
+  <button onclick="toggleCabinet()" class="close-btn">✕</button>
 
   <h3>Menu</h3>
 
@@ -193,7 +220,6 @@ body{
   <a href="#">Documents</a>
   <a href="#">Messages</a>
   <a href="#">Settings</a>
-
 </div>
 
 <!-- SCRIPT -->
@@ -202,8 +228,11 @@ let cabinetOpen = false;
 
 function toggleCabinet(){
   const c = document.getElementById("cabinet");
+  const o = document.getElementById("overlay");
+
   cabinetOpen = !cabinetOpen;
   c.style.right = cabinetOpen ? "0" : "-280px";
+  o.style.display = cabinetOpen ? "block" : "none";
 }
 </script>
 
