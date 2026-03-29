@@ -256,23 +256,14 @@ function submitShowing(){
     return;
   }
 
-  confirmBox.style.display = "block";
-confirmBox.innerHTML = `
-  Showing request submitted.<br><br>
-  <strong>${selectedDay}</strong> at <strong>${selectedTime}</strong><br>
-  for <strong>${name}</strong>.<br><br>
-  Next step: continue to application or wait for confirmation.<br><br>
-  <a href="apply.html" style="
-    display:inline-block;
-    padding:12px 16px;
-    border-radius:12px;
-    background:#2563eb;
-    color:white;
-    text-decoration:none;
-    font-weight:700;
-  ">Start application</a>
-`;
+ confirmBox.style.display = "block";
 
+confirmBox.innerHTML =
+  "Showing request submitted.<br><br>" +
+  "<strong>" + selectedDay + "</strong> at <strong>" + selectedTime + "</strong><br>" +
+  "for <strong>" + name + "</strong>.<br><br>" +
+  "Next step: continue to application or wait for confirmation.<br><br>" +
+  "<a href='apply.html' style='display:inline-block;padding:12px 16px;border-radius:12px;background:#2563eb;color:white;text-decoration:none;font-weight:700;'>Start application</a>";
   setTimeout(() => {
     confirmBox.scrollIntoView({ behavior: "smooth", block: "nearest" });
   }, 100);
