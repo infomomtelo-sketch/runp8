@@ -14,7 +14,7 @@ body{
 }
 
 .wrap{
-  max-width:820px;
+  max-width:800px;
   margin:0 auto;
   padding:20px;
 }
@@ -32,22 +32,23 @@ body{
   font-weight:600;
 }
 
-.page-title{
-  margin:10px 0 20px;
-  font-size:32px;
+.menu-btn{
+  font-size:22px;
+  background:none;
+  border:none;
+  cursor:pointer;
 }
 
 .card{
   background:white;
   border-radius:18px;
-  padding:18px;
+  padding:20px;
   box-shadow:0 8px 24px rgba(0,0,0,0.06);
 }
 
-.label{
-  font-size:14px;
-  font-weight:700;
-  margin:14px 0 8px;
+.title{
+  font-size:28px;
+  margin-bottom:16px;
 }
 
 .field{
@@ -55,71 +56,39 @@ body{
   padding:12px;
   border-radius:12px;
   border:1px solid #dbe4ee;
-  margin-bottom:10px;
-  font-size:14px;
-}
-
-.grid{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:10px;
-}
-
-.choice-grid{
-  display:grid;
-  grid-template-columns:repeat(3,1fr);
-  gap:10px;
-}
-
-.choice-btn{
-  padding:12px;
-  border-radius:12px;
-  border:1px solid #dbe4ee;
-  background:#f8fbff;
-  cursor:pointer;
-  font-weight:600;
-}
-
-.choice-btn.active{
-  background:#2563eb;
-  color:white;
-  border-color:#2563eb;
-}
-
-.actions{
-  display:flex;
-  gap:10px;
-  margin-top:16px;
+  margin-bottom:12px;
 }
 
 .btn{
-  flex:1;
+  width:100%;
   padding:14px;
   border-radius:14px;
   border:none;
   font-weight:700;
+  background:#2563eb;
+  color:white;
   cursor:pointer;
 }
 
-.btn-primary{
-  background:#2563eb;
-  color:white;
+/* cabinet */
+#cabinet{
+  position:fixed;
+  top:0;
+  right:-280px;
+  width:280px;
+  height:100%;
+  background:white;
+  box-shadow:-4px 0 20px rgba(0,0,0,0.12);
+  padding:20px;
+  transition:0.3s;
+  z-index:999;
 }
 
-.btn-secondary{
-  background:#eef4ff;
-  color:#1d4ed8;
-  border:1px solid #dbe4ee;
-}
-
-.confirm{
-  display:none;
-  margin-top:16px;
-  padding:14px;
-  border-radius:14px;
-  background:#eefbf2;
-  border:1px solid #b7e2c3;
-  color:#17603a;
+#cabinet a{
+  display:block;
+  padding:10px 0;
+  text-decoration:none;
+  color:#142133;
 }
 </style>
 </head>
@@ -131,98 +100,49 @@ body{
   <div class="top">
     <a href="../index.html" class="back">← Back</a>
     <div>RunP8</div>
+    <button onclick="toggleCabinet()" class="menu-btn">☰</button>
   </div>
 
-  <h1 class="page-title">List your property</h1>
+  <form action="https://formspree.io/f/xreynqkp" method="POST" enctype="multipart/form-data" class="card">
 
-  <div class="card">
+    <div class="title">List your property</div>
 
-    <div class="label">Property address</div>
-    <input id="address" class="field" placeholder="Street address">
-    <input id="city" class="field" placeholder="City">
+    <input name="owner_name" class="field" placeholder="Your name" required>
+    <input name="email" class="field" placeholder="Email" required>
 
-    <div class="label">Property type</div>
-    <div class="choice-grid" id="typeGrid">
-      <button type="button" class="choice-btn">House</button>
-      <button type="button" class="choice-btn">Apartment</button>
-      <button type="button" class="choice-btn">Studio</button>
-      <button type="button" class="choice-btn">Room</button>
-      <button type="button" class="choice-btn">ADU</button>
-      <button type="button" class="choice-btn">Other</button>
-    </div>
+    <input name="title" class="field" placeholder="Property title" required>
+    <input name="price" class="field" placeholder="Monthly rent" required>
+    <input name="location" class="field" placeholder="Location / city" required>
 
-    <div class="label">Details</div>
-    <div class="grid">
-      <input id="beds" class="field" placeholder="Bedrooms">
-      <input id="baths" class="field" placeholder="Bathrooms">
-    </div>
+    <textarea name="description" class="field" placeholder="Property description"></textarea>
 
-    <div class="grid">
-      <input id="rent" class="field" placeholder="Monthly rent">
-      <input id="available" class="field" placeholder="Available date">
-    </div>
+    <input type="file" name="image" class="field">
 
-    <div class="label">Description</div>
-    <textarea id="desc" class="field" style="min-height:100px;" placeholder="Describe the property"></textarea>
+    <input type="hidden" name="form_type" value="owner_listing">
 
-    <div class="actions">
-      <button type="button" class="btn btn-secondary" onclick="goBack()">Back</button>
-      <button type="button" class="btn btn-primary" onclick="submitListing()">Continue</button>
-    </div>
+    <button type="submit" class="btn">Submit property</button>
 
-    <div id="confirmBox" class="confirm"></div>
-
-  </div>
+  </form>
 
 </div>
 
+<div id="cabinet">
+  <button onclick="toggleCabinet()">✕</button>
+  <h3>Menu</h3>
+  <a href="../index.html">Home</a>
+  <a href="../rental/index.html">Rental</a>
+  <a href="../showing.html">Showing</a>
+  <a href="../apply.html">Application</a>
+</div>
+
 <script>
+let open = false;
 
-let selectedType = "";
-
-// Select property type
-document.querySelectorAll('#typeGrid .choice-btn').forEach(btn => {
-  btn.addEventListener('click', () => {
-    document.querySelectorAll('#typeGrid .choice-btn').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    selectedType = btn.textContent.trim();
-  });
-});
-
-// Back button
-function goBack(){
-  window.location.href = "../index.html";
+function toggleCabinet(){
+  const c = document.getElementById("cabinet");
+  open = !open;
+  c.style.right = open ? "0" : "-280px";
 }
-
-// Submit
-function submitListing(){
-
-  const address = document.getElementById('address').value.trim();
-  const city = document.getElementById('city').value.trim();
-
-  const confirmBox = document.getElementById('confirmBox');
-
-  if(!address || !city){
-    alert("Please enter address and city.");
-    return;
-  }
-
-  if(!selectedType){
-    alert("Please select property type.");
-    return;
-  }
-
-  confirmBox.style.display = "block";
-
-  confirmBox.innerHTML = `
-    Listing saved.<br><br>
-    <strong>${selectedType}</strong><br>
-    ${address}, ${city}<br><br>
-    Next step: add photos or continue later.
-  `;
-
-}
-
 </script>
 
 </body>
