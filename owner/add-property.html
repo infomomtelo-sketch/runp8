@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>RunP8 | Owner</title>
+<title>RunP8 | Add Property</title>
 
 <style>
 body{
@@ -35,7 +35,6 @@ body{
 .page-title{
   margin:10px 0 20px;
   font-size:32px;
-  line-height:1.1;
 }
 
 .card{
@@ -53,12 +52,11 @@ body{
 
 .field{
   width:100%;
-  padding:12px 14px;
+  padding:12px;
   border-radius:12px;
   border:1px solid #dbe4ee;
-  font-size:14px;
   margin-bottom:10px;
-  box-sizing:border-box;
+  font-size:14px;
 }
 
 .grid{
@@ -69,7 +67,7 @@ body{
 
 .choice-grid{
   display:grid;
-  grid-template-columns:repeat(3,minmax(0,1fr));
+  grid-template-columns:repeat(3,1fr);
   gap:10px;
 }
 
@@ -80,7 +78,6 @@ body{
   background:#f8fbff;
   cursor:pointer;
   font-weight:600;
-  font-size:14px;
 }
 
 .choice-btn.active{
@@ -100,9 +97,8 @@ body{
   padding:14px;
   border-radius:14px;
   border:none;
-  cursor:pointer;
-  font-size:15px;
   font-weight:700;
+  cursor:pointer;
 }
 
 .btn-primary{
@@ -124,87 +120,67 @@ body{
   background:#eefbf2;
   border:1px solid #b7e2c3;
   color:#17603a;
-  font-size:14px;
-  line-height:1.5;
-}
-
-.note{
-  margin-top:10px;
-  color:#6b7280;
-  font-size:13px;
-}
-
-@media (max-width:700px){
-  .grid,
-  .choice-grid{
-    grid-template-columns:1fr;
-  }
-
-  .actions{
-    flex-direction:column;
-  }
-
-  .page-title{
-    font-size:28px;
-  }
 }
 </style>
 </head>
+
 <body>
 
 <div class="wrap">
+
   <div class="top">
-    <a href="../index.html" class="back">← Back to home</a>
+    <a href="../index.html" class="back">← Back</a>
     <div>RunP8</div>
   </div>
 
   <h1 class="page-title">List your property</h1>
 
   <div class="card">
+
     <div class="label">Property address</div>
-    <input class="field" id="address" type="text" placeholder="Street address" />
-    <input class="field" id="city" type="text" placeholder="City" />
+    <input id="address" class="field" placeholder="Street address">
+    <input id="city" class="field" placeholder="City">
 
     <div class="label">Property type</div>
     <div class="choice-grid" id="typeGrid">
-      <button class="choice-btn">House</button>
-      <button class="choice-btn">Apartment</button>
-      <button class="choice-btn">Studio</button>
-      <button class="choice-btn">ADU</button>
-      <button class="choice-btn">Room</button>
-      <button class="choice-btn">Other</button>
+      <button type="button" class="choice-btn">House</button>
+      <button type="button" class="choice-btn">Apartment</button>
+      <button type="button" class="choice-btn">Studio</button>
+      <button type="button" class="choice-btn">Room</button>
+      <button type="button" class="choice-btn">ADU</button>
+      <button type="button" class="choice-btn">Other</button>
     </div>
 
-    <div class="label">Property details</div>
+    <div class="label">Details</div>
     <div class="grid">
-      <input class="field" id="beds" type="text" placeholder="Bedrooms" />
-      <input class="field" id="baths" type="text" placeholder="Bathrooms" />
+      <input id="beds" class="field" placeholder="Bedrooms">
+      <input id="baths" class="field" placeholder="Bathrooms">
     </div>
 
     <div class="grid">
-      <input class="field" id="rent" type="text" placeholder="Monthly rent" />
-      <input class="field" id="available" type="text" placeholder="Available date" />
+      <input id="rent" class="field" placeholder="Monthly rent">
+      <input id="available" class="field" placeholder="Available date">
     </div>
 
-    <div class="label">Short description</div>
-    <textarea class="field" id="desc" placeholder="Describe the property" style="min-height:110px;"></textarea>
+    <div class="label">Description</div>
+    <textarea id="desc" class="field" style="min-height:100px;" placeholder="Describe the property"></textarea>
 
     <div class="actions">
-      <button class="btn btn-secondary" onclick="window.location.href='../index.html'">Back</button>
-      <button class="btn btn-primary" onclick="submitListing()">Continue</button>
+      <button type="button" class="btn btn-secondary" onclick="goBack()">Back</button>
+      <button type="button" class="btn btn-primary" onclick="submitListing()">Continue</button>
     </div>
 
-    <div class="confirm" id="confirmBox"></div>
+    <div id="confirmBox" class="confirm"></div>
 
-    <div class="note">
-      Next step: after this, you can add photos, review details, or continue to publish later.
-    </div>
   </div>
+
 </div>
 
 <script>
+
 let selectedType = "";
 
+// Select property type
 document.querySelectorAll('#typeGrid .choice-btn').forEach(btn => {
   btn.addEventListener('click', () => {
     document.querySelectorAll('#typeGrid .choice-btn').forEach(b => b.classList.remove('active'));
@@ -213,40 +189,40 @@ document.querySelectorAll('#typeGrid .choice-btn').forEach(btn => {
   });
 });
 
+// Back button
+function goBack(){
+  window.location.href = "../index.html";
+}
+
+// Submit
 function submitListing(){
+
   const address = document.getElementById('address').value.trim();
   const city = document.getElementById('city').value.trim();
-  const beds = document.getElementById('beds').value.trim();
-  const baths = document.getElementById('baths').value.trim();
-  const rent = document.getElementById('rent').value.trim();
-  const available = document.getElementById('available').value.trim();
+
   const confirmBox = document.getElementById('confirmBox');
 
   if(!address || !city){
-    alert("Please enter the property address and city.");
+    alert("Please enter address and city.");
     return;
   }
 
   if(!selectedType){
-    alert("Please select a property type.");
+    alert("Please select property type.");
     return;
   }
 
   confirmBox.style.display = "block";
+
   confirmBox.innerHTML = `
-    Listing details saved.<br><br>
+    Listing saved.<br><br>
     <strong>${selectedType}</strong><br>
-    ${address}, ${city}<br>
-    ${beds || "-"} bed · ${baths || "-"} bath<br>
-    ${rent || "Rent not entered"}<br>
-    ${available || "Available date not entered"}<br><br>
+    ${address}, ${city}<br><br>
     Next step: add photos or continue later.
   `;
 
-  setTimeout(() => {
-    confirmBox.scrollIntoView({ behavior: "smooth", block: "nearest" });
-  }, 100);
 }
+
 </script>
 
 </body>
