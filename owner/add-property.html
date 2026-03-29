@@ -1,1 +1,412 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Add Property | RunP8</title>
 
+<style>
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family:Arial, sans-serif;
+  background:#0b1120;
+  color:#fff;
+}
+.topbar{
+  padding:16px 20px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+.topbar a{
+  color:#60a5fa;
+  text-decoration:none;
+}
+.wrap{
+  max-width:1100px;
+  margin:0 auto;
+  padding:20px;
+}
+.grid{
+  display:grid;
+  grid-template-columns:1.25fr .95fr;
+  gap:20px;
+}
+.card{
+  background:#111827;
+  border-radius:16px;
+  padding:18px;
+  border:1px solid rgba(255,255,255,.05);
+}
+label{
+  display:block;
+  margin:0 0 6px;
+  color:#dbeafe;
+}
+input, textarea{
+  width:100%;
+  padding:12px 14px;
+  border:none;
+  border-radius:12px;
+  margin:0 0 16px;
+  font-size:16px;
+}
+textarea{
+  min-height:120px;
+  resize:vertical;
+}
+.actions{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+}
+button{
+  padding:12px 16px;
+  border:none;
+  border-radius:10px;
+  cursor:pointer;
+  font-weight:700;
+}
+.btn-primary{
+  background:#2563eb;
+  color:#fff;
+}
+.btn-secondary{
+  background:#e5e7eb;
+  color:#111827;
+}
+.message{
+  display:none;
+  margin-top:14px;
+  padding:12px 14px;
+  border-radius:12px;
+  background:#052e16;
+  border:1px solid #166534;
+  color:#dcfce7;
+}
+.message.show{
+  display:block;
+}
+.preview-title{
+  font-size:28px;
+  font-weight:800;
+  margin:0 0 10px;
+}
+.preview-price{
+  font-size:22px;
+  font-weight:800;
+  margin:0 0 8px;
+}
+.preview-meta{
+  color:#cbd5e1;
+  margin:0 0 12px;
+}
+.preview-desc{
+  color:#e5e7eb;
+  line-height:1.5;
+  margin:0 0 16px;
+}
+.preview-gallery{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:10px;
+}
+.preview-gallery img,
+.local-photos img{
+  width:100%;
+  height:160px;
+  object-fit:cover;
+  border-radius:12px;
+  display:block;
+  background:#1f2937;
+}
+.local-photos{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:10px;
+  margin-top:8px;
+}
+.helper{
+  color:#93c5fd;
+  font-size:14px;
+  margin:-8px 0 14px;
+}
+@media (max-width:900px){
+  .grid{
+    grid-template-columns:1fr;
+  }
+  .preview-gallery{
+    grid-template-columns:1fr;
+  }
+  .local-photos{
+    grid-template-columns:repeat(2,1fr);
+  }
+}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <h2 style="margin:0">RunP8</h2>
+  <a href="/rental/">Back to Listings</a>
+</div>
+
+<div class="wrap">
+  <div class="grid">
+    <div class="card">
+      <h1 style="margin-top:0">Add Property</h1>
+
+      <label for="title">Property Title</label>
+      <input id="title" placeholder="Example: Masters Bedroom" />
+
+      <label for="price">Monthly Rent</label>
+      <input id="price" placeholder="Example: $1200" />
+
+      <label for="address">Location</label>
+      <input id="address" placeholder="Example: Fresno" />
+
+      <label for="bedrooms">Bedrooms</label>
+      <input id="bedrooms" placeholder="Example: 1" />
+
+      <label for="bathrooms">Bathrooms</label>
+      <input id="bathrooms" placeholder="Example: 1" />
+
+      <label for="description">Description</label>
+      <textarea id="description" placeholder="Add a short description..."></textarea>
+
+      <div class="actions" style="margin-bottom:14px">
+        <button class="btn-secondary" type="button" onclick="improveText()">Improve Description</button>
+      </div>
+
+      <label for="photos">Photos</label>
+      <input id="photos" type="file" accept="image/*" multiple onchange="previewPhotos(event)" />
+      <div class="helper">Use 1 to 4 photos for this prototype.</div>
+      <div id="photoPreview" class="local-photos"></div>
+
+      <div class="actions" style="margin-top:18px">
+        <button class="btn-secondary" type="button" onclick="saveDraft()">Save Draft</button>
+        <button class="btn-primary" type="button" onclick="publish()">Publish Property</button>
+      </div>
+
+      <div id="message" class="message"></div>
+    </div>
+
+    <div class="card">
+      <div id="p_title" class="preview-title">Preview Title</div>
+      <div id="p_price" class="preview-price">$0</div>
+      <div id="p_meta" class="preview-meta">Location • 0 bed • 0 bath</div>
+      <p id="p_desc" class="preview-desc">Description will appear here.</p>
+      <div id="p_photos" class="preview-gallery"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+let uploadedPhotos = [];
+let photosReady = true;
+
+function showMessage(text){
+  const msg = document.getElementById("message");
+  msg.textContent = text;
+  msg.classList.add("show");
+  setTimeout(() => msg.classList.remove("show"), 3000);
+}
+
+function updatePreview(){
+  const title = document.getElementById("title").value.trim();
+  const price = document.getElementById("price").value.trim();
+  const address = document.getElementById("address").value.trim();
+  const bedrooms = document.getElementById("bedrooms").value.trim();
+  const bathrooms = document.getElementById("bathrooms").value.trim();
+  const description = document.getElementById("description").value.trim();
+
+  document.getElementById("p_title").textContent = title || "Preview Title";
+  document.getElementById("p_price").textContent = price || "$0";
+  document.getElementById("p_meta").textContent =
+    `${address || "Location"} • ${bedrooms || 0} bed • ${bathrooms || 0} bath`;
+  document.getElementById("p_desc").textContent =
+    description || "Description will appear here.";
+}
+
+function improveText(){
+  document.getElementById("description").value =
+    "Private room with a clean and quiet environment. Ideal for professionals or travel workers. Utilities included for convenience.";
+  updatePreview();
+}
+
+function fileToCompressedDataUrl(file, maxWidth = 900, quality = 0.72){
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+
+    reader.onload = e => {
+      const img = new Image();
+
+      img.onload = () => {
+        let { width, height } = img;
+
+        if (width > maxWidth) {
+          height = Math.round((height * maxWidth) / width);
+          width = maxWidth;
+        }
+
+        const canvas = document.createElement("canvas");
+        canvas.width = width;
+        canvas.height = height;
+
+        const ctx = canvas.getContext("2d");
+        ctx.drawImage(img, 0, 0, width, height);
+
+        resolve(canvas.toDataURL("image/jpeg", quality));
+      };
+
+      img.onerror = reject;
+      img.src = e.target.result;
+    };
+
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
+async function previewPhotos(event){
+  const files = Array.from(event.target.files || []).slice(0, 4);
+  const localPreview = document.getElementById("photoPreview");
+  const previewGallery = document.getElementById("p_photos");
+
+  localPreview.innerHTML = "";
+  previewGallery.innerHTML = "";
+  uploadedPhotos = [];
+  photosReady = false;
+
+  try {
+    for (const file of files) {
+      const dataUrl = await fileToCompressedDataUrl(file, 900, 0.72);
+      uploadedPhotos.push(dataUrl);
+
+      const img1 = document.createElement("img");
+      img1.src = dataUrl;
+      localPreview.appendChild(img1);
+
+      const img2 = document.createElement("img");
+      img2.src = dataUrl;
+      previewGallery.appendChild(img2);
+    }
+  } catch (error) {
+    console.error(error);
+    showMessage("Could not process one or more photos.");
+  } finally {
+    photosReady = true;
+  }
+}
+
+function collectFormData(){
+  return {
+    id: "listing_" + Date.now(),
+    title: document.getElementById("title").value.trim(),
+    price: document.getElementById("price").value.trim(),
+    address: document.getElementById("address").value.trim(),
+    bedrooms: document.getElementById("bedrooms").value.trim(),
+    bathrooms: document.getElementById("bathrooms").value.trim(),
+    description: document.getElementById("description").value.trim(),
+    photos: uploadedPhotos.slice(0, 4),
+    createdAt: new Date().toISOString()
+  };
+}
+
+function saveDraft(){
+  if (!photosReady) {
+    showMessage("Photos are still loading. Please wait a moment.");
+    return;
+  }
+
+  try {
+    const draft = collectFormData();
+    localStorage.setItem("runp8_owner_draft", JSON.stringify(draft));
+    showMessage("Draft saved on this device.");
+  } catch (error) {
+    console.error(error);
+    showMessage("Could not save draft.");
+  }
+}
+
+function publish(){
+  if (!photosReady) {
+    showMessage("Photos are still loading. Please wait a moment.");
+    return;
+  }
+
+  const listing = collectFormData();
+
+  if (!listing.title || !listing.price || !listing.address) {
+    showMessage("Please add title, rent, and location first.");
+    return;
+  }
+
+  try {
+    const listings = JSON.parse(localStorage.getItem("runp8_listings") || "[]");
+    listings.unshift(listing);
+    localStorage.setItem("runp8_listings", JSON.stringify(listings));
+    localStorage.removeItem("runp8_owner_draft");
+    localStorage.setItem("runp8_selected_property", JSON.stringify(listing));
+    showMessage("Property published.");
+    setTimeout(() => {
+      window.location.href = "/rental/";
+    }, 600);
+  } catch (error) {
+    console.error(error);
+    showMessage("Could not publish property.");
+  }
+}
+
+function loadDraft(){
+  const raw = localStorage.getItem("runp8_owner_draft");
+  if (!raw) {
+    updatePreview();
+    return;
+  }
+
+  try {
+    const draft = JSON.parse(raw);
+
+    document.getElementById("title").value = draft.title || "";
+    document.getElementById("price").value = draft.price || "";
+    document.getElementById("address").value = draft.address || "";
+    document.getElementById("bedrooms").value = draft.bedrooms || "";
+    document.getElementById("bathrooms").value = draft.bathrooms || "";
+    document.getElementById("description").value = draft.description || "";
+    uploadedPhotos = Array.isArray(draft.photos) ? draft.photos : [];
+
+    const localPreview = document.getElementById("photoPreview");
+    const previewGallery = document.getElementById("p_photos");
+
+    localPreview.innerHTML = "";
+    previewGallery.innerHTML = "";
+
+    uploadedPhotos.forEach(src => {
+      const img1 = document.createElement("img");
+      img1.src = src;
+      localPreview.appendChild(img1);
+
+      const img2 = document.createElement("img");
+      img2.src = src;
+      previewGallery.appendChild(img2);
+    });
+
+    updatePreview();
+  } catch (error) {
+    console.error(error);
+    updatePreview();
+  }
+}
+
+document.querySelectorAll("input, textarea").forEach(el => {
+  el.addEventListener("input", updatePreview);
+});
+
+loadDraft();
+updatePreview();
+</script>
+
+</body>
+</html>
