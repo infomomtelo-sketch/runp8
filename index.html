@@ -21,6 +21,7 @@ body{
   align-items:center;
   gap:12px;
   position:relative;
+  z-index:1;
 }
 
 .logo{
@@ -33,6 +34,7 @@ body{
   justify-content:center;
   border-radius:12px;
   font-weight:700;
+  font-size:18px;
 }
 
 /* NAV */
@@ -48,6 +50,7 @@ body{
   text-decoration:none;
   color:#142133;
   font-weight:600;
+  font-size:16px;
 }
 
 /* HERO */
@@ -66,14 +69,14 @@ body{
 .title{
   font-size:26px;
   font-weight:700;
-  margin-bottom:10px;
+  margin-bottom:18px;
 }
 
 /* BUTTONS */
 .quick{
   display:flex;
   flex-direction:column;
-  gap:10px;
+  gap:14px;
   margin-top:10px;
 }
 
@@ -82,12 +85,13 @@ body{
 }
 
 .btn{
-  padding:14px;
-  border-radius:14px;
+  padding:18px 14px;
+  border-radius:18px;
   border:none;
   font-weight:700;
   cursor:pointer;
   text-align:center;
+  font-size:16px;
 }
 
 .primary{
@@ -107,26 +111,32 @@ body{
   left:0;
   width:100%;
   height:100%;
-  background:rgba(0,0,0,0.25);
+  background:rgba(0,0,0,0.18);
+  backdrop-filter:blur(2px);
   display:none;
-  z-index:998;
+  z-index:999;
 }
 
 /* CABINET */
 #cabinet{
   position:fixed;
   top:0;
-  right:-280px;
-  width:280px;
+  right:-300px;
+  width:300px;
   height:100%;
   background:white;
-  box-shadow:-8px 0 30px rgba(0,0,0,0.15);
-  padding:20px;
+  box-shadow:-12px 0 40px rgba(0,0,0,0.2);
+  padding:22px;
   transition:0.3s ease;
-  z-index:999;
-  border-top-left-radius:12px;
-  border-bottom-left-radius:12px;
+  z-index:1000;
+  border-top-left-radius:16px;
+  border-bottom-left-radius:16px;
   box-sizing:border-box;
+}
+
+#cabinet h3{
+  margin:0 0 18px 0;
+  font-size:22px;
 }
 
 #cabinet a{
@@ -135,6 +145,7 @@ body{
   text-decoration:none;
   color:#142133;
   font-weight:600;
+  font-size:16px;
 }
 
 #cabinet hr{
@@ -147,12 +158,45 @@ body{
   margin-bottom:16px;
   background:none;
   border:none;
-  font-size:20px;
+  font-size:22px;
   cursor:pointer;
+  color:#142133;
+}
+
+.menu-toggle{
+  position:absolute;
+  right:16px;
+  top:16px;
+  font-size:22px;
+  background:none;
+  border:none;
+  cursor:pointer;
+  color:#2563eb;
+}
+
+/* MOBILE */
+@media (max-width:700px){
+  .nav{
+    justify-content:space-around;
+    gap:10px;
+    flex-wrap:wrap;
+  }
+
+  .nav a{
+    font-size:15px;
+  }
+
+  .title{
+    font-size:24px;
+  }
+
+  #cabinet{
+    width:280px;
+    right:-280px;
+  }
 }
 </style>
 </head>
-
 <body>
 
 <!-- HEADER -->
@@ -160,21 +204,13 @@ body{
   <div class="logo">P8</div>
 
   <div>
-    <div style="font-weight:700;">RunP8</div>
+    <div style="font-weight:700;font-size:18px;">RunP8</div>
     <div style="font-size:13px;color:#6b7280;">
       Rentals, listings, applications, and support
     </div>
   </div>
 
-  <button onclick="toggleCabinet()" style="
-    position:absolute;
-    right:16px;
-    top:16px;
-    font-size:20px;
-    background:none;
-    border:none;
-    cursor:pointer;
-  ">☰</button>
+  <button onclick="toggleCabinet()" class="menu-toggle">☰</button>
 </div>
 
 <!-- NAV -->
@@ -185,7 +221,7 @@ body{
   <a href="showing.html">Showing</a>
 </div>
 
-<!-- HERO -->
+<!-- MAIN -->
 <div class="hero">
   <div class="card">
     <div class="title">What do you need?</div>
@@ -222,7 +258,6 @@ body{
   <a href="#">Settings</a>
 </div>
 
-<!-- SCRIPT -->
 <script>
 let cabinetOpen = false;
 
@@ -231,8 +266,16 @@ function toggleCabinet(){
   const o = document.getElementById("overlay");
 
   cabinetOpen = !cabinetOpen;
-  c.style.right = cabinetOpen ? "0" : "-280px";
-  o.style.display = cabinetOpen ? "block" : "none";
+
+  if(cabinetOpen){
+    c.style.right = "0";
+    o.style.display = "block";
+    document.body.style.overflow = "hidden";
+  } else {
+    c.style.right = window.innerWidth <= 700 ? "-280px" : "-300px";
+    o.style.display = "none";
+    document.body.style.overflow = "auto";
+  }
 }
 </script>
 
