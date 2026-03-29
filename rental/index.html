@@ -24,12 +24,21 @@ body{
   justify-content:space-between;
   align-items:center;
   margin-bottom:20px;
+  position:relative;
 }
 
 .back{
   text-decoration:none;
   color:#2563eb;
   font-weight:600;
+}
+
+.menu-btn{
+  font-size:22px;
+  background:none;
+  border:none;
+  cursor:pointer;
+  color:#142133;
 }
 
 h1{
@@ -65,6 +74,7 @@ h1{
 .desc{
   font-size:14px;
   margin:10px 0;
+  line-height:1.5;
 }
 
 .btn{
@@ -77,8 +87,45 @@ h1{
   text-decoration:none;
   font-weight:700;
 }
-</style>
 
+/* cabinet */
+#cabinet{
+  position:fixed;
+  top:0;
+  right:-280px;
+  width:280px;
+  height:100%;
+  background:white;
+  box-shadow:-4px 0 20px rgba(0,0,0,0.12);
+  padding:20px;
+  transition:0.3s ease;
+  z-index:999;
+  box-sizing:border-box;
+}
+
+#cabinet h3{
+  margin-top:0;
+  margin-bottom:18px;
+}
+
+#cabinet a{
+  display:block;
+  text-decoration:none;
+  color:#142133;
+  font-weight:600;
+  padding:10px 0;
+  border-bottom:1px solid #eef2f7;
+}
+
+#cabinetClose{
+  margin-bottom:16px;
+  background:none;
+  border:none;
+  font-size:20px;
+  cursor:pointer;
+  color:#142133;
+}
+</style>
 </head>
 <body>
 
@@ -87,6 +134,7 @@ h1{
   <div class="top">
     <a href="../index.html" class="back">← Back</a>
     <div>RunP8</div>
+    <button type="button" class="menu-btn" onclick="toggleCabinet()">☰</button>
   </div>
 
   <h1>Available rentals</h1>
@@ -94,32 +142,53 @@ h1{
   <!-- PROPERTY 1 -->
   <div class="card">
     <div class="img"></div>
-
     <div class="title">Master bedroom</div>
     <div class="meta">$1200 · Fresno</div>
-
     <div class="desc">
       Private room with a clean and quiet environment. Utilities included.
     </div>
-
     <a href="../showing.html" class="btn">Schedule showing</a>
   </div>
 
   <!-- PROPERTY 2 -->
   <div class="card">
     <div class="img"></div>
-
     <div class="title">Studio unit</div>
     <div class="meta">$1800 · Fresno</div>
-
     <div class="desc">
       Cozy studio near downtown. Ideal for single occupant.
     </div>
-
     <a href="../showing.html" class="btn">Schedule showing</a>
   </div>
 
 </div>
+
+<div id="cabinet">
+  <button id="cabinetClose" type="button" onclick="toggleCabinet()">✕</button>
+  <h3>Menu</h3>
+  <a href="../index.html">Home</a>
+  <a href="../rental/index.html">Rental</a>
+  <a href="../showing.html">Showing</a>
+  <a href="../apply.html">Application</a>
+  <a href="../owner/add-property.html">Owner</a>
+
+  <hr>
+
+  <a href="#">Pay rent</a>
+  <a href="#">Documents</a>
+  <a href="#">Messages</a>
+  <a href="#">Settings</a>
+</div>
+
+<script>
+let cabinetOpen = false;
+
+function toggleCabinet(){
+  const c = document.getElementById("cabinet");
+  cabinetOpen = !cabinetOpen;
+  c.style.right = cabinetOpen ? "0" : "-280px";
+}
+</script>
 
 </body>
 </html>
