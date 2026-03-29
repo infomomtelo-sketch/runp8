@@ -123,7 +123,7 @@ button{
 }
 .local-photos{
   display:grid;
-  grid-template-columns:repeat(3,1fr);
+  grid-template-columns:repeat(2,1fr);
   gap:10px;
   margin-top:8px;
 }
@@ -181,7 +181,7 @@ button{
 
       <label for="photos">Photos</label>
       <input id="photos" type="file" accept="image/*" multiple onchange="previewPhotos(event)" />
-      <div class="helper">Use 1 to 4 photos for this prototype.</div>
+      <div class="helper">Use 1 to 2 photos for this prototype.</div>
       <div id="photoPreview" class="local-photos"></div>
 
       <div class="actions" style="margin-top:18px">
@@ -210,7 +210,7 @@ function showMessage(text){
   const msg = document.getElementById("message");
   msg.textContent = text;
   msg.classList.add("show");
-  setTimeout(() => msg.classList.remove("show"), 3000);
+  setTimeout(() => msg.classList.remove("show"), 3200);
 }
 
 function updatePreview(){
@@ -235,7 +235,7 @@ function improveText(){
   updatePreview();
 }
 
-function fileToCompressedDataUrl(file, maxWidth = 900, quality = 0.72){
+function fileToCompressedDataUrl(file, maxWidth = 600, quality = 0.5){
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
 
@@ -270,7 +270,7 @@ function fileToCompressedDataUrl(file, maxWidth = 900, quality = 0.72){
 }
 
 async function previewPhotos(event){
-  const files = Array.from(event.target.files || []).slice(0, 4);
+  const files = Array.from(event.target.files || []).slice(0, 2);
   const localPreview = document.getElementById("photoPreview");
   const previewGallery = document.getElementById("p_photos");
 
@@ -281,7 +281,7 @@ async function previewPhotos(event){
 
   try {
     for (const file of files) {
-      const dataUrl = await fileToCompressedDataUrl(file, 900, 0.72);
+      const dataUrl = await fileToCompressedDataUrl(file, 600, 0.5);
       uploadedPhotos.push(dataUrl);
 
       const img1 = document.createElement("img");
@@ -293,7 +293,7 @@ async function previewPhotos(event){
       previewGallery.appendChild(img2);
     }
   } catch (error) {
-    console.error(error);
+    console.error("Photo error:", error);
     showMessage("Could not process one or more photos.");
   } finally {
     photosReady = true;
@@ -309,7 +309,7 @@ function collectFormData(){
     bedrooms: document.getElementById("bedrooms").value.trim(),
     bathrooms: document.getElementById("bathrooms").value.trim(),
     description: document.getElementById("description").value.trim(),
-    photos: uploadedPhotos.slice(0, 4),
+    photos: uploadedPhotos.slice(0, 2),
     createdAt: new Date().toISOString()
   };
 }
@@ -325,14 +325,23 @@ function saveDraft(){
     localStorage.setItem("runp8_owner_draft", JSON.stringify(draft));
     showMessage("Draft saved on this device.");
   } catch (error) {
-    console.error(error);
-    showMessage("Could not save draft.");
+    console.error("Draft error:", error);
+    if (error && error.name === "QuotaExceededError") {
+      showMessage("Storage full. Use fewer or smaller photos.");
+    } else {
+      showMessage("Could not save draft.");
+    }
   }
 }
 
 function publish(){
   if (!photosReady) {
     showMessage("Photos are still loading. Please wait a moment.");
+    return;
+  }
+
+  if (uploadedPhotos.length > 2) {
+    showMessage("Limit photos to 2 only.");
     return;
   }
 
@@ -354,8 +363,12 @@ function publish(){
       window.location.href = "/rental/";
     }, 600);
   } catch (error) {
-    console.error(error);
-    showMessage("Could not publish property.");
+    console.error("Publish error:", error);
+    if (error && error.name === "QuotaExceededError") {
+      showMessage("Storage full. Use fewer or smaller photos.");
+    } else {
+      showMessage("Could not publish property.");
+    }
   }
 }
 
@@ -375,7 +388,7 @@ function loadDraft(){
     document.getElementById("bedrooms").value = draft.bedrooms || "";
     document.getElementById("bathrooms").value = draft.bathrooms || "";
     document.getElementById("description").value = draft.description || "";
-    uploadedPhotos = Array.isArray(draft.photos) ? draft.photos : [];
+    uploadedPhotos = Array.isArray(draft.photos) ? draft.photos.slice(0, 2) : [];
 
     const localPreview = document.getElementById("photoPreview");
     const previewGallery = document.getElementById("p_photos");
@@ -395,7 +408,7 @@ function loadDraft(){
 
     updatePreview();
   } catch (error) {
-    console.error(error);
+    console.error("Load draft error:", error);
     updatePreview();
   }
 }
