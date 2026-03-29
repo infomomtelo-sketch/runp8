@@ -24,6 +24,7 @@ body{
   justify-content:space-between;
   align-items:center;
   margin-bottom:20px;
+  position:relative;
 }
 
 .back{
@@ -37,6 +38,7 @@ body{
   background:none;
   border:none;
   cursor:pointer;
+  color:#142133;
 }
 
 .card{
@@ -57,6 +59,8 @@ body{
   border-radius:12px;
   border:1px solid #dbe4ee;
   margin-bottom:12px;
+  box-sizing:border-box;
+  font-size:14px;
 }
 
 .btn{
@@ -70,6 +74,13 @@ body{
   cursor:pointer;
 }
 
+.note{
+  margin-top:12px;
+  color:#6b7280;
+  font-size:13px;
+  line-height:1.5;
+}
+
 /* cabinet */
 #cabinet{
   position:fixed;
@@ -80,14 +91,31 @@ body{
   background:white;
   box-shadow:-4px 0 20px rgba(0,0,0,0.12);
   padding:20px;
-  transition:0.3s;
+  transition:0.3s ease;
   z-index:999;
+  box-sizing:border-box;
+}
+
+#cabinet h3{
+  margin-top:0;
+  margin-bottom:18px;
 }
 
 #cabinet a{
   display:block;
-  padding:10px 0;
   text-decoration:none;
+  color:#142133;
+  font-weight:600;
+  padding:10px 0;
+  border-bottom:1px solid #eef2f7;
+}
+
+#cabinetClose{
+  margin-bottom:16px;
+  background:none;
+  border:none;
+  font-size:20px;
+  cursor:pointer;
   color:#142133;
 }
 </style>
@@ -100,7 +128,7 @@ body{
   <div class="top">
     <a href="../index.html" class="back">← Back</a>
     <div>RunP8</div>
-    <button onclick="toggleCabinet()" class="menu-btn">☰</button>
+    <button type="button" class="menu-btn" onclick="toggleCabinet()">☰</button>
   </div>
 
   <form action="https://formspree.io/f/xreynqkp" method="POST" enctype="multipart/form-data" class="card">
@@ -122,26 +150,38 @@ body{
 
     <button type="submit" class="btn">Submit property</button>
 
+    <div class="note">
+      Next step: review submission, then publish or follow up.
+    </div>
+
   </form>
 
 </div>
 
 <div id="cabinet">
-  <button onclick="toggleCabinet()">✕</button>
+  <button id="cabinetClose" type="button" onclick="toggleCabinet()">✕</button>
   <h3>Menu</h3>
   <a href="../index.html">Home</a>
   <a href="../rental/index.html">Rental</a>
   <a href="../showing.html">Showing</a>
   <a href="../apply.html">Application</a>
+  <a href="../owner/add-property.html">Owner</a>
+
+  <hr>
+
+  <a href="#">Pay rent</a>
+  <a href="#">Documents</a>
+  <a href="#">Messages</a>
+  <a href="#">Settings</a>
 </div>
 
 <script>
-let open = false;
+let cabinetOpen = false;
 
 function toggleCabinet(){
   const c = document.getElementById("cabinet");
-  open = !open;
-  c.style.right = open ? "0" : "-280px";
+  cabinetOpen = !cabinetOpen;
+  c.style.right = cabinetOpen ? "0" : "-280px";
 }
 </script>
 
