@@ -1,1 +1,110 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>RunP8 Inquiry</title>
 
+<style>
+body{
+  margin:0;
+  font-family:Arial;
+  background:#f1f5f9;
+  color:#111827;
+}
+
+.wrap{
+  max-width:600px;
+  margin:auto;
+  padding:20px;
+}
+
+.card{
+  background:white;
+  border-radius:16px;
+  padding:20px;
+  margin-top:20px;
+  box-shadow:0 4px 20px rgba(0,0,0,0.05);
+}
+
+h1{
+  margin:0 0 6px;
+}
+
+h2{
+  margin-top:0;
+}
+
+img{
+  width:100%;
+  border-radius:12px;
+  margin-bottom:12px;
+}
+
+button{
+  width:100%;
+  padding:14px;
+  border:none;
+  border-radius:12px;
+  background:#2563eb;
+  color:white;
+  font-weight:bold;
+  margin-top:12px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="wrap">
+
+  <h1>RunP8 Inquiry</h1>
+  <p>Clear next steps for renters and property inquiries</p>
+
+  <a href="/rental/">← Back to listings</a>
+
+  <div class="card" id="content"></div>
+
+</div>
+
+<script>
+
+const selected = JSON.parse(localStorage.getItem("runp8_selected_property"));
+
+const container = document.getElementById("content");
+
+if(!selected){
+  container.innerHTML = `
+    <h2>No property selected</h2>
+    <p>Please go back and choose a listing first.</p>
+    <button onclick="location.href='/rental/'">Back to Listings</button>
+  `;
+}else{
+
+  const img = selected.photos && selected.photos[0] ? selected.photos[0] : "";
+
+  container.innerHTML = `
+    ${img ? `<img src="${img}" />` : ""}
+
+    <h2>${selected.title}</h2>
+    <p><strong>${selected.price}</strong> • ${selected.address}</p>
+
+    <p>${selected.description || ""}</p>
+
+    <hr/>
+
+    <h3>Next step</h3>
+    <p>Select your preferred showing time.</p>
+
+    <button onclick="requestShowing()">Request Showing</button>
+  `;
+}
+
+function requestShowing(){
+  alert("Showing request submitted (next step: schedule system)");
+}
+
+</script>
+
+</body>
+</html>
