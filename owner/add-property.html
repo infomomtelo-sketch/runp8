@@ -38,7 +38,7 @@ body{
   background:none;
   border:none;
   cursor:pointer;
-  color:#142133;
+  color:#2563eb;
 }
 
 .card{
@@ -72,6 +72,7 @@ body{
   background:#2563eb;
   color:white;
   cursor:pointer;
+  font-size:15px;
 }
 
 .note{
@@ -81,42 +82,76 @@ body{
   line-height:1.5;
 }
 
+.preview{
+  width:100%;
+  border-radius:14px;
+  margin-top:10px;
+  display:none;
+  border:1px solid #dbe4ee;
+}
+
+/* overlay */
+#overlay{
+  position:fixed;
+  top:0;
+  left:0;
+  width:100%;
+  height:100%;
+  background:rgba(0,0,0,0.18);
+  backdrop-filter:blur(2px);
+  display:none;
+  z-index:999;
+}
+
 /* cabinet */
 #cabinet{
   position:fixed;
   top:0;
-  right:-280px;
-  width:280px;
+  right:-300px;
+  width:300px;
   height:100%;
   background:white;
-  box-shadow:-4px 0 20px rgba(0,0,0,0.12);
-  padding:20px;
+  box-shadow:-12px 0 40px rgba(0,0,0,0.2);
+  padding:22px;
   transition:0.3s ease;
-  z-index:999;
+  z-index:1000;
+  border-top-left-radius:18px;
+  border-bottom-left-radius:18px;
   box-sizing:border-box;
 }
 
 #cabinet h3{
-  margin-top:0;
-  margin-bottom:18px;
+  margin:0 0 18px 0;
+  font-size:22px;
 }
 
 #cabinet a{
   display:block;
+  margin-bottom:14px;
   text-decoration:none;
   color:#142133;
   font-weight:600;
-  padding:10px 0;
-  border-bottom:1px solid #eef2f7;
 }
 
-#cabinetClose{
+#cabinet hr{
+  margin:18px 0;
+  border:none;
+  border-top:1px solid #e5e7eb;
+}
+
+.close-btn{
   margin-bottom:16px;
   background:none;
   border:none;
-  font-size:20px;
+  font-size:22px;
   cursor:pointer;
-  color:#142133;
+}
+
+@media (max-width:700px){
+  #cabinet{
+    width:280px;
+    right:-280px;
+  }
 }
 </style>
 </head>
@@ -131,7 +166,7 @@ body{
     <button type="button" class="menu-btn" onclick="toggleCabinet()">☰</button>
   </div>
 
-  <form action="https://formspree.io/f/xreynqkp" method="POST" enctype="multipart/form-data" class="card">
+  <form action="https://formspree.io/f/xreynqkp" method="POST" class="card">
 
     <div class="title">List your property</div>
 
@@ -144,7 +179,12 @@ body{
 
     <textarea name="description" class="field" placeholder="Property description"></textarea>
 
-    <input type="file" name="image" class="field">
+    <input name="image" id="image" class="field" placeholder="Image URL (optional)">
+    <div style="font-size:12px;color:#6b7280;margin-top:-4px;margin-bottom:8px;">
+      Paste a public image link.
+    </div>
+
+    <img id="preview" class="preview" alt="Property preview">
 
     <input type="hidden" name="form_type" value="owner_listing">
 
@@ -158,9 +198,15 @@ body{
 
 </div>
 
+<!-- OVERLAY -->
+<div id="overlay" onclick="toggleCabinet()"></div>
+
+<!-- CABINET -->
 <div id="cabinet">
-  <button id="cabinetClose" type="button" onclick="toggleCabinet()">✕</button>
+  <button type="button" onclick="toggleCabinet()" class="close-btn">✕</button>
+
   <h3>Menu</h3>
+
   <a href="../index.html">Home</a>
   <a href="../rental/index.html">Rental</a>
   <a href="../showing.html">Showing</a>
@@ -169,10 +215,10 @@ body{
 
   <hr>
 
-  <a href="#">Pay rent</a>
-  <a href="#">Documents</a>
-  <a href="#">Messages</a>
-  <a href="#">Settings</a>
+  <a href="../apply.html">Pay rent</a>
+  <a href="../apply.html">Documents</a>
+  <a href="../showing.html">Messages</a>
+  <a href="../index.html">Settings</a>
 </div>
 
 <script>
@@ -180,9 +226,35 @@ let cabinetOpen = false;
 
 function toggleCabinet(){
   const c = document.getElementById("cabinet");
+  const o = document.getElementById("overlay");
+
   cabinetOpen = !cabinetOpen;
-  c.style.right = cabinetOpen ? "0" : "-280px";
+
+  if(cabinetOpen){
+    c.style.right = "0";
+    o.style.display = "block";
+    document.body.style.overflow = "hidden";
+  } else {
+    c.style.right = window.innerWidth <= 700 ? "-280px" : "-300px";
+    o.style.display = "none";
+    document.body.style.overflow = "auto";
+  }
 }
+
+const imageInput = document.getElementById("image");
+const preview = document.getElementById("preview");
+
+imageInput.addEventListener("input", () => {
+  const url = imageInput.value.trim();
+
+  if(url){
+    preview.src = url;
+    preview.style.display = "block";
+  } else {
+    preview.src = "";
+    preview.style.display = "none";
+  }
+});
 </script>
 
 </body>
