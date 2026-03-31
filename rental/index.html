@@ -190,6 +190,22 @@ function toggleCabinet(){
   cabinetOpen = !cabinetOpen;
   c.style.right = cabinetOpen ? "0" : "-280px";
 }
+
+function sendInquiryWithProperty(name, price, location) {
+  const subject = encodeURIComponent(
+    "Inquiry - " + name + " (" + price + " " + location + ")"
+  );
+
+  const body = encodeURIComponent(
+    "Property: " + name + "\n" +
+    "Price: " + price + "\n" +
+    "Location: " + location + "\n\n" +
+    "Hi, I am interested in this property."
+  );
+
+  window.location.href =
+    "mailto:rentals@runp8.com?subject=" + subject + "&body=" + body;
+}
 </script>
 
 </body>
