@@ -1,281 +1,204 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>RunP8 | Rentals made clear</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>RunP8 Chat</title>
+  <style>
+    * { box-sizing: border-box; }
 
-<style>
-body{
-  margin:0;
-  font-family:Arial, sans-serif;
-  background:#f4f7fb;
-  color:#142133;
-}
+    body{
+      margin:0;
+      font-family:Arial, sans-serif;
+      background:#f3f5f9;
+      color:#0f172a;
+    }
 
-/* HEADER */
-.header{
-  padding:18px;
-  background:white;
-  display:flex;
-  align-items:center;
-  gap:12px;
-  position:relative;
-  z-index:1;
-}
+    .app{
+      max-width:520px;
+      margin:0 auto;
+      min-height:100vh;
+      display:flex;
+      flex-direction:column;
+      background:#f3f5f9;
+    }
 
-.logo{
-  width:42px;
-  height:42px;
-  background:#2563eb;
-  color:white;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  border-radius:12px;
-  font-weight:700;
-  font-size:18px;
-}
+    .topbar{
+      padding:18px 16px 10px;
+      background:#f3f5f9;
+      border-bottom:1px solid #e5e7eb;
+      position:sticky;
+      top:0;
+      z-index:10;
+    }
 
-/* NAV */
-.nav{
-  display:flex;
-  gap:20px;
-  padding:12px 18px;
-  background:white;
-  border-bottom:1px solid #e5e7eb;
-}
+    .brand{
+      font-size:22px;
+      font-weight:700;
+      margin:0;
+    }
 
-.nav a{
-  text-decoration:none;
-  color:#142133;
-  font-weight:600;
-  font-size:16px;
-}
+    .sub{
+      margin:4px 0 0;
+      font-size:14px;
+      color:#6b7280;
+    }
 
-/* HERO */
-.hero{
-  padding:20px;
-}
+    .chat-wrap{
+      flex:1;
+      padding:18px 14px 110px;
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+    }
 
-.card{
-  background:white;
-  border-radius:18px;
-  padding:20px;
-  box-shadow:0 10px 30px rgba(0,0,0,0.06);
-  margin-bottom:20px;
-}
+    .bubble{
+      max-width:85%;
+      padding:14px 16px;
+      border-radius:18px;
+      line-height:1.45;
+      font-size:16px;
+      word-wrap:break-word;
+    }
 
-.title{
-  font-size:26px;
-  font-weight:700;
-  margin-bottom:18px;
-}
+    .bubble.bot{
+      background:#ffffff;
+      color:#0f172a;
+      border:1px solid #e5e7eb;
+      align-self:flex-start;
+      border-bottom-left-radius:6px;
+    }
 
-/* BUTTONS */
-.quick{
-  display:flex;
-  flex-direction:column;
-  gap:14px;
-  margin-top:10px;
-}
+    .bubble.user{
+      background:#2563eb;
+      color:#ffffff;
+      align-self:flex-end;
+      border-bottom-right-radius:6px;
+    }
 
-.quick a{
-  text-decoration:none;
-}
+    .quick-actions{
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+      margin-top:4px;
+    }
 
-.btn{
-  padding:18px 14px;
-  border-radius:18px;
-  border:none;
-  font-weight:700;
-  cursor:pointer;
-  text-align:center;
-  font-size:16px;
-}
+    .quick-btn{
+      border:none;
+      background:#ffffff;
+      border:1px solid #dbe2ea;
+      color:#0f172a;
+      padding:10px 14px;
+      border-radius:999px;
+      font-size:14px;
+      cursor:pointer;
+    }
 
-.primary{
-  background:#2563eb;
-  color:white;
-}
+    .composer{
+      position:fixed;
+      left:0;
+      right:0;
+      bottom:0;
+      background:#ffffff;
+      border-top:1px solid #e5e7eb;
+      padding:12px;
+    }
 
-.secondary{
-  background:#f1f5f9;
-  color:#142133;
-}
+    .composer-inner{
+      max-width:520px;
+      margin:0 auto;
+      display:flex;
+      gap:10px;
+      align-items:center;
+    }
 
-/* OVERLAY */
-#overlay{
-  position:fixed;
-  top:0;
-  left:0;
-  width:100%;
-  height:100%;
-  background:rgba(0,0,0,0.18);
-  backdrop-filter:blur(2px);
-  display:none;
-  z-index:999;
-}
+    .input{
+      flex:1;
+      border:1px solid #dbe2ea;
+      border-radius:999px;
+      padding:14px 16px;
+      font-size:16px;
+      outline:none;
+    }
 
-/* CABINET */
-#cabinet{
-  position:fixed;
-  top:0;
-  right:-300px;
-  width:300px;
-  height:100%;
-  background:white;
-  box-shadow:-12px 0 40px rgba(0,0,0,0.2);
-  padding:22px;
-  transition:0.3s ease;
-  z-index:1000;
-  border-top-left-radius:16px;
-  border-bottom-left-radius:16px;
-  box-sizing:border-box;
-}
-
-#cabinet h3{
-  margin:0 0 18px 0;
-  font-size:22px;
-}
-
-#cabinet a{
-  display:block;
-  margin-bottom:14px;
-  text-decoration:none;
-  color:#142133;
-  font-weight:600;
-  font-size:16px;
-}
-
-#cabinet hr{
-  margin:18px 0;
-  border:none;
-  border-top:1px solid #e5e7eb;
-}
-
-.close-btn{
-  margin-bottom:16px;
-  background:none;
-  border:none;
-  font-size:22px;
-  cursor:pointer;
-  color:#142133;
-}
-
-.menu-toggle{
-  position:absolute;
-  right:16px;
-  top:16px;
-  font-size:22px;
-  background:none;
-  border:none;
-  cursor:pointer;
-  color:#2563eb;
-}
-
-/* MOBILE */
-@media (max-width:700px){
-  .nav{
-    justify-content:space-around;
-    gap:10px;
-    flex-wrap:wrap;
-  }
-
-  .nav a{
-    font-size:15px;
-  }
-
-  .title{
-    font-size:24px;
-  }
-
-  #cabinet{
-    width:280px;
-    right:-280px;
-  }
-}
-</style>
+    .send-btn{
+      border:none;
+      background:#2563eb;
+      color:#ffffff;
+      border-radius:999px;
+      padding:14px 18px;
+      font-size:15px;
+      font-weight:700;
+      cursor:pointer;
+    }
+  </style>
 </head>
 <body>
+  <div class="app">
+    <div class="topbar">
+      <h1 class="brand">RunP8</h1>
+      <p class="sub">Helping you find a place, simply</p>
+    </div>
 
-<!-- HEADER -->
-<div class="header">
-  <div class="logo">P8</div>
+    <div class="chat-wrap" id="chatWrap">
+      <div class="bubble bot" id="starterMessage">
+        Hi. Tell me what kind of rental you’re looking for.
+      </div>
 
-  <div>
-    <div style="font-weight:700;font-size:18px;">RunP8</div>
-    <div style="font-size:13px;color:#6b7280;">
-      Rentals, listings, applications, and support
+      <div class="quick-actions">
+        <button class="quick-btn" onclick="addUserMessage('I want to schedule a showing.')">Schedule showing</button>
+        <button class="quick-btn" onclick="addUserMessage('Can you tell me more about this place?')">More details</button>
+        <button class="quick-btn" onclick="addUserMessage('What do I need to apply?')">Application help</button>
+      </div>
     </div>
   </div>
 
-  <button onclick="toggleCabinet()" class="menu-toggle">☰</button>
-</div>
-
-<!-- NAV -->
-<div class="nav">
-  <a href="index.html">Home</a>
-  <a href="rental/index.html">Rental</a>
-  <a href="owner/add-property.html">Owner</a>
-  <a href="showing.html">Showing</a>
-</div>
-
-<!-- MAIN -->
-<div class="hero">
-  <div class="card">
-    <div class="title">What do you need?</div>
-
-    <div class="quick">
-      <a href="rental/index.html"><div class="btn primary">Find a rental</div></a>
-      <a href="showing.html"><div class="btn secondary">Schedule showing</div></a>
-      <a href="apply.html"><div class="btn secondary">Start application</div></a>
-      <a href="owner/add-property.html"><div class="btn secondary">Owner tools</div></a>
+  <div class="composer">
+    <div class="composer-inner">
+      <input id="chatInput" class="input" type="text" placeholder="Type a message..." />
+      <button class="send-btn" onclick="sendMessage()">Send</button>
     </div>
   </div>
-</div>
 
-<!-- OVERLAY -->
-<div id="overlay" onclick="toggleCabinet()"></div>
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const property = params.get("property");
+    const price = params.get("price");
+    const location = params.get("location");
 
-<!-- CABINET -->
-<div id="cabinet">
-  <button onclick="toggleCabinet()" class="close-btn">✕</button>
+    const starterMessage = document.getElementById("starterMessage");
+    const chatWrap = document.getElementById("chatWrap");
+    const chatInput = document.getElementById("chatInput");
 
-  <h3>Menu</h3>
+    if (property) {
+      starterMessage.textContent =
+        "Hi, I’m interested in the " + property +
+        (location ? " in " + location : "") +
+        (price ? " for $" + price : "") +
+        ".";
+    }
 
-  <a href="index.html">Home</a>
-  <a href="rental/index.html">Rental</a>
-  <a href="showing.html">Showing</a>
-  <a href="apply.html">Application</a>
-  <a href="owner/add-property.html">Owner</a>
+    function addUserMessage(text) {
+      const msg = document.createElement("div");
+      msg.className = "bubble user";
+      msg.textContent = text;
+      chatWrap.appendChild(msg);
+      chatWrap.scrollTop = chatWrap.scrollHeight;
+    }
 
-  <hr>
+    function sendMessage() {
+      const text = chatInput.value.trim();
+      if (!text) return;
+      addUserMessage(text);
+      chatInput.value = "";
+    }
 
-  <a href="apply.html">Pay rent</a>
-<a href="apply.html">Application docs</a>
-<a href="showing.html">Inquiry messages</a>
-<a href="index.html">Back to home</a>
-<script>
-let cabinetOpen = false;
-
-function toggleCabinet(){
-  const c = document.getElementById("cabinet");
-  const o = document.getElementById("overlay");
-
-  cabinetOpen = !cabinetOpen;
-
-  if(cabinetOpen){
-    c.style.right = "0";
-    o.style.display = "block";
-    document.body.style.overflow = "hidden";
-  } else {
-    c.style.right = window.innerWidth <= 700 ? "-280px" : "-300px";
-    o.style.display = "none";
-    document.body.style.overflow = "auto";
-  }
-}
-</script>
-
+    chatInput.addEventListener("keydown", function(e) {
+      if (e.key === "Enter") {
+        e.preventDefault();
+        sendMessage();
+      }
+    });
+  </script>
 </body>
 </html>
