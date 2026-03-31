@@ -1,0 +1,128 @@
+<!doctype html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>RunP8 Chat</title>
+
+<style>
+body {
+  font-family: Arial, sans-serif;
+  background: #f6f8fb;
+  margin: 0;
+}
+
+.chat {
+  max-width: 500px;
+  margin: auto;
+  padding: 20px;
+}
+
+.messages {
+  height: 70vh;
+  overflow-y: auto;
+  background: white;
+  padding: 10px;
+  border-radius: 10px;
+}
+
+.msg {
+  margin: 8px 0;
+  padding: 10px;
+  border-radius: 10px;
+  max-width: 70%;
+  word-wrap: break-word;
+}
+
+.me {
+  background: #2563eb;
+  color: white;
+  margin-left: auto;
+}
+
+.other {
+  background: #e5e7eb;
+  color: #111827;
+}
+
+.input {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+input {
+  flex: 1;
+  padding: 10px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+}
+
+button {
+  padding: 10px 14px;
+  background: #2563eb;
+  color: white;
+  border: none;
+  border-radius: 8px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="chat">
+  <div class="messages" id="messages"></div>
+
+  <div class="input">
+    <input id="text" placeholder="Type message..." />
+    <button onclick="send()">Send</button>
+  </div>
+</div>
+
+<script>
+const API = "https://polished-scene-97a2.infomomtelo.workers.dev";
+
+// temporary conversation id for testing only
+const conversation_id = "demo123";
+
+async function load() {
+  const res = await fetch(`${API}/messages?conversation_id=${conversation_id}`);
+  const data = await res.json();
+
+  const box = document.getElementById("messages");
+  box.innerHTML = "";
+
+  data.forEach(m => {
+    const div = document.createElement("div");
+    div.className = "msg " + (m.sender_role === "me" ? "me" : "other");
+    div.innerText = m.message_text;
+    box.appendChild(div);
+  });
+
+  box.scrollTop = box.scrollHeight;
+}
+
+async function send() {
+  const input = document.getElementById("text");
+  const text = input.value.trim();
+  if (!text) return;
+
+  await fetch(`${API}/message`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      conversation_id,
+      sender: "me",
+      text
+    })
+  });
+
+  input.value = "";
+  load();
+}
+
+setInterval(load, 2000);
+load();
+</script>
+
+</body>
+</html>
