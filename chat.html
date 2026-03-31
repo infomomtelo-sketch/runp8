@@ -1,228 +1,150 @@
 <!doctype html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>RunP8 Chat</title>
-  <style>
-    * { box-sizing: border-box; }
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>RunP8 Chat</title>
 
-    body{
-      margin:0;
-      font-family:Arial, sans-serif;
-      background:#f3f5f9;
-      color:#0f172a;
-    }
+<style>
+body {
+  font-family: Arial;
+  background: #f6f8fb;
+  margin: 0;
+}
 
-    .app{
-      max-width:520px;
-      margin:0 auto;
-      min-height:100vh;
-      display:flex;
-      flex-direction:column;
-      background:#f3f5f9;
-    }
+.chat {
+  max-width: 500px;
+  margin: auto;
+  padding: 20px;
+}
 
-    .topbar{
-      padding:18px 16px 10px;
-      background:#f3f5f9;
-      border-bottom:1px solid #e5e7eb;
-      position:sticky;
-      top:0;
-      z-index:10;
-    }
+.messages {
+  height: 70vh;
+  overflow-y: auto;
+  background: white;
+  padding: 10px;
+  border-radius: 10px;
+}
 
-    .brand{
-      font-size:22px;
-      font-weight:700;
-      margin:0;
-    }
+.msg {
+  margin: 8px 0;
+  padding: 10px;
+  border-radius: 10px;
+  max-width: 70%;
+}
 
-    .sub{
-      margin:4px 0 0;
-      font-size:14px;
-      color:#6b7280;
-    }
+.me {
+  background: #2563eb;
+  color: white;
+  margin-left: auto;
+}
 
-    .chat-wrap{
-      flex:1;
-      padding:18px 14px 110px;
-      display:flex;
-      flex-direction:column;
-      gap:12px;
-    }
+.other {
+  background: #e5e7eb;
+}
 
-    .bubble{
-      max-width:85%;
-      padding:14px 16px;
-      border-radius:18px;
-      line-height:1.45;
-      font-size:16px;
-      word-wrap:break-word;
-    }
+.input {
+  display: flex;
+  margin-top: 10px;
+}
 
-    .bubble.bot{
-      background:#ffffff;
-      color:#0f172a;
-      border:1px solid #e5e7eb;
-      align-self:flex-start;
-      border-bottom-left-radius:6px;
-    }
+input {
+  flex: 1;
+  padding: 10px;
+}
 
-    .bubble.user{
-      background:#2563eb;
-      color:#ffffff;
-      align-self:flex-end;
-      border-bottom-right-radius:6px;
-    }
-
-    .composer{
-      position:fixed;
-      left:0;
-      right:0;
-      bottom:0;
-      background:#ffffff;
-      border-top:1px solid #e5e7eb;
-      padding:12px;
-    }
-
-    .composer-inner{
-      max-width:520px;
-      margin:0 auto;
-      display:flex;
-      gap:10px;
-      align-items:center;
-    }
-
-    .input{
-      flex:1;
-      border:1px solid #dbe2ea;
-      border-radius:999px;
-      padding:14px 16px;
-      font-size:16px;
-      outline:none;
-    }
-
-    .send-btn{
-      border:none;
-      background:#2563eb;
-      color:#ffffff;
-      border-radius:999px;
-      padding:14px 18px;
-      font-size:15px;
-      font-weight:700;
-      cursor:pointer;
-    }
-  </style>
+button {
+  padding: 10px;
+  background: #2563eb;
+  color: white;
+  border: none;
+}
+</style>
 </head>
+
 <body>
-  <div class="app">
-    <div class="topbar">
-      <h1 class="brand">RunP8</h1>
-      <p class="sub">Helping you find a place, simply</p>
-    </div>
 
-    <div class="chat-wrap" id="chatWrap"></div>
+<div class="chat">
+  <h3>RunP8 Chat</h3>
+
+  <div class="messages" id="messages"></div>
+
+  <div class="input">
+    <input id="text" placeholder="Type message..." />
+    <button onclick="send()">Send</button>
   </div>
+</div>
 
-  <div class="composer">
-    <div class="composer-inner">
-      <input id="chatInput" class="input" type="text" placeholder="Type a message..." />
-      <button class="send-btn" onclick="sendMessage()">Send</button>
-    </div>
-  </div>
+<script>
+const API = "https://polished-scene-97a2.infomomtelo.workers.dev";
 
-  <script>
-    const API = "https://polished-scene-97a2.infomomtelo.workers.dev";
+// GET URL PARAMS
+const params = new URLSearchParams(window.location.search);
+const property = params.get("property") || "general";
+const price = params.get("price") || "0";
+const location = params.get("location") || "unknown";
 
-    const params = new URLSearchParams(window.location.search);
-    const property = params.get("property") || "";
-    const price = params.get("price") || "";
-    const location = params.get("location") || "";
+// CREATE UNIQUE CONVERSATION ID
+const conversation_id =
+  "conv_" +
+  property.replace(/\s+/g, "_").toLowerCase() +
+  "_" +
+  price +
+  "_" +
+  location.replace(/\s+/g, "_").toLowerCase();
 
-    const chatWrap = document.getElementById("chatWrap");
-    const chatInput = document.getElementById("chatInput");
+async function load() {
+  const res = await fetch(`${API}/messages?conversation_id=${conversation_id}`);
+  const data = await res.json();
 
-    let initialSent = false;
+  const box = document.getElementById("messages");
+  box.innerHTML = "";
 
-    const conversation_id =
-      "conv_" +
-      (property || "general").replace(/\s+/g, "_").toLowerCase() +
-      "_" +
-      (price || "0") +
-      "_" +
-      (location || "unknown").replace(/\s+/g, "_").toLowerCase();
+  // FIRST MESSAGE (IMPORTANT)
+  if (property && data.length === 0) {
+    const starter = document.createElement("div");
+    starter.className = "msg other";
+    starter.innerText =
+      "Hi, I’m interested in the " +
+      property +
+      " in " +
+      location +
+      " for $" +
+      price + ".";
+    box.appendChild(starter);
+  }
 
-    function renderBubble(text, senderRole) {
-      const div = document.createElement("div");
-      div.className = "bubble " + (senderRole === "me" ? "user" : "bot");
-      div.textContent = text;
-      chatWrap.appendChild(div);
-    }
+  data.forEach(m => {
+    const div = document.createElement("div");
+    div.className = "msg " + (m.sender === "me" ? "me" : "other");
+    div.innerText = m.text;
+    box.appendChild(div);
+  });
 
-    async function loadMessages() {
-      const res = await fetch(`${API}/messages?conversation_id=${conversation_id}`);
-      const data = await res.json();
+  box.scrollTop = box.scrollHeight;
+}
 
-      chatWrap.innerHTML = "";
+async function send() {
+  const text = document.getElementById("text").value;
 
-      if (property && !initialSent && data.length === 0) {
-        initialSent = true;
+  if (!text) return;
 
-        await fetch(`${API}/message`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            conversation_id,
-            sender: "me",
-            text:
-              "Hi, I’m interested in the " +
-              property +
-              " in " +
-              location +
-              " for $" +
-              price +
-              "."
-          })
-        });
+  await fetch(`${API}/message`, {
+    method: "POST",
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify({
+      conversation_id,
+      sender: "me",
+      text
+    })
+  });
 
-        return loadMessages();
-      }
+  document.getElementById("text").value = "";
+  load();
+}
 
-      data.forEach(m => {
-        renderBubble(m.message_text, m.sender_role);
-      });
+setInterval(load, 2000);
+load();
+</script>
 
-      chatWrap.scrollTop = chatWrap.scrollHeight;
-    }
-
-    async function sendMessage() {
-      const text = chatInput.value.trim();
-      if (!text) return;
-
-      await fetch(`${API}/message`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          conversation_id,
-          sender: "me",
-          text
-        })
-      });
-
-      chatInput.value = "";
-      loadMessages();
-    }
-
-    chatInput.addEventListener("keydown", function(e) {
-      if (e.key === "Enter") {
-        e.preventDefault();
-        sendMessage();
-      }
-    });
-
-    setInterval(loadMessages, 2000);
-    loadMessages();
-  </script>
 </body>
 </html>
