@@ -208,6 +208,33 @@ function sendInquiryWithProperty(name, price, location) {
   window.location.href =
     "mailto:rentals@runp8.com?subject=" + subject + "&body=" + body;
 }
+const params = new URLSearchParams(window.location.search);
+
+const property = params.get("property");
+const price = params.get("price");
+const location = params.get("location");
+
+if (property) {
+  const chatBox = document.querySelector(".chat-box") || document.body;
+
+  const msg = document.createElement("div");
+  msg.style.padding = "12px";
+  msg.style.margin = "10px";
+  msg.style.background = "#e5e7eb";
+  msg.style.borderRadius = "12px";
+
+  msg.innerText =
+    "Hi, I’m interested in the " +
+    property +
+    " in " +
+    location +
+    " for $" +
+    price +
+    ".";
+
+  chatBox.appendChild(msg);
+}
+
 </script>
 
 </body>
