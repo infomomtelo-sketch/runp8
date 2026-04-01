@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>RunP8 Chat</title>
+  <title>RunP8</title>
   <style>
     * { box-sizing: border-box; }
 
@@ -44,6 +44,27 @@
       color:#6b7280;
     }
 
+    .owner-block{
+      padding:14px 16px 0;
+    }
+
+    .owner-label{
+      font-size:14px;
+      color:#6b7280;
+      margin:0 0 8px;
+    }
+
+    .btn{
+      display:inline-block;
+      background:#2563eb;
+      color:#fff;
+      padding:12px 18px;
+      border-radius:12px;
+      text-decoration:none;
+      font-weight:700;
+      margin:0 0 8px;
+    }
+
     .chat-wrap{
       flex:1;
       padding:18px 14px 110px;
@@ -67,13 +88,6 @@
       border:1px solid #e5e7eb;
       align-self:flex-start;
       border-bottom-left-radius:6px;
-    }
-
-    .bubble.user{
-      background:#2563eb;
-      color:#ffffff;
-      align-self:flex-end;
-      border-bottom-right-radius:6px;
     }
 
     .quick-actions{
@@ -140,18 +154,20 @@
       <p class="sub">Helping you find a place, simply</p>
     </div>
 
-    <a href="/owner/add-property.html" class="btn">
-  List your property
-   </a>
+    <div class="owner-block">
+      <p class="owner-label">Are you a property owner?</p>
+      <a href="/owner/add-property.html" class="btn">+ List your property</a>
+    </div>
+
     <div class="chat-wrap" id="chatWrap">
       <div class="bubble bot" id="starterMessage">
         Hi. Tell me what kind of rental you’re looking for.
       </div>
 
       <div class="quick-actions">
-        <button class="quick-btn" onclick="addUserMessage('I want to schedule a showing.')">Schedule showing</button>
-        <button class="quick-btn" onclick="addUserMessage('Can you tell me more about this place?')">More details</button>
-        <button class="quick-btn" onclick="addUserMessage('What do I need to apply?')">Application help</button>
+        <button class="quick-btn" onclick="fillMessage('I want to schedule a showing.')">Schedule showing</button>
+        <button class="quick-btn" onclick="fillMessage('Can you tell me more about this place?')">More details</button>
+        <button class="quick-btn" onclick="fillMessage('What do I need to apply?')">Application help</button>
       </div>
     </div>
   </div>
@@ -164,29 +180,24 @@
   </div>
 
   <script>
-    const params = new URLSearchParams(window.location.search);
-    const property = params.get("property");
-    const price = params.get("price");
-    const location = params.get("location");
-
-    const starterMessage = document.getElementById("starterMessage");
-    const chatWrap = document.getElementById("chatWrap");
     const chatInput = document.getElementById("chatInput");
-
-    if (property) {
-      starterMessage.textContent =
-        "Hi, I’m interested in the " + property +
-        (location ? " in " + location : "") +
-        (price ? " for $" + price : "") +
-        ".";
-    }
+    const chatWrap = document.getElementById("chatWrap");
 
     function addUserMessage(text) {
       const msg = document.createElement("div");
-      msg.className = "bubble user";
+      msg.className = "bubble";
+      msg.style.background = "#2563eb";
+      msg.style.color = "#ffffff";
+      msg.style.alignSelf = "flex-end";
+      msg.style.borderBottomRightRadius = "6px";
       msg.textContent = text;
       chatWrap.appendChild(msg);
       chatWrap.scrollTop = chatWrap.scrollHeight;
+    }
+
+    function fillMessage(text) {
+      chatInput.value = text;
+      chatInput.focus();
     }
 
     function sendMessage() {
