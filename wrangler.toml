@@ -1,0 +1,28 @@
+# Cloudflare Pages configuration for title22-caregiver-training.
+#
+# Secrets are NOT stored here. wrangler.toml is committed to git, so anything in
+# [vars] is public. Set these as encrypted secrets instead — Cloudflare
+# dashboard → Pages → Settings → Variables and Secrets, or:
+#
+#   npx wrangler pages secret put ANTHROPIC_API_KEY
+#   npx wrangler pages secret put SUPABASE_SERVICE_ROLE_KEY
+#   npx wrangler pages secret put SUPABASE_ANON_KEY
+#
+# Required by functions/api/tello.js:      ANTHROPIC_API_KEY
+# Required by functions/api/briefing.js:   SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY
+# Optional:                                BRIEFING_FACILITY_COLUMN
+#
+# The build also reads VITE_SUPABASE_URL, VITE_SUPABASE_ANON_KEY, and
+# VITE_FEATURE_FLAGS at build time. Those are baked into the client bundle, so
+# only ever put publishable values there.
+
+name = "title22-caregiver-training"
+compatibility_date = "2026-08-17"
+compatibility_flags = ["nodejs_compat"]
+
+pages_build_output_dir = "dist"
+
+[vars]
+# Non-secret defaults only. Every Title22 feature ships off; flip one on here to
+# change the default for all users without a code change.
+VITE_FEATURE_FLAGS = '{"briefing":false,"tello":false,"modern-alerts":false}'

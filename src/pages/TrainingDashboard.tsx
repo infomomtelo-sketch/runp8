@@ -1,6 +1,35 @@
 import React, { useEffect, useState } from 'react';
 import { supabase } from '../integrations/supabase/client';
 import TrainingQuiz from '../components/TrainingQuiz';
+import FeatureFlagAdmin from '../components/FeatureFlagAdmin';
+import { MorningBriefing, TelloDrawer } from '../components/title22-complete';
+import { FeatureFlags } from '../config/featureFlags';
+
+/** Title22 attributes live in Supabase user metadata, which is untyped. */
+interface Title22Profile {
+  facilityId: string | null;
+  roles: string[];
+  isPartnerAdmin: boolean;
+}
+
+const EMPTY_PROFILE: Title22Profile = { facilityId: null, roles: [], isPartnerAdmin: false };
+
+function readProfile(user: { user_metadata?: Record<string, unknown>; app_metadata?: Record<string, unknown> }): Title22Profile {
+  const metadata = { ...(user.app_metadata ?? {}), ...(user.user_metadata ?? {}) };
+
+  const facility = metadata.title22_facility_id ?? metadata.facility_id;
+  const rawRoles = metadata.title22_roles;
+
+  return {
+    facilityId: typeof facility === 'string' ? facility : null,
+    roles: Array.isArray(rawRoles)
+      ? rawRoles.filter((role): role is string => typeof role === 'string')
+      : typeof rawRoles === 'string'
+        ? [rawRoles]
+        : [],
+    isPartnerAdmin: metadata.title22_is_partner_admin === true
+  };
+}
 
 interface Course {
   id: string;
@@ -45,11 +74,16 @@ export default function TrainingDashboard() {
   const [progress, setProgress] = useState<Record<string, any>>({});
   const [loading, setLoading] = useState(true);
   const [activeQuizCourse, setActiveQuizCourse] = useState<{ id: string; hours: number } | null>(null);
+  const [profile, setProfile] = useState<Title22Profile>(EMPTY_PROFILE);
+  const [currentTab, setCurrentTab] = useState<'training' | 'briefing'>('training');
+  const [telloOpen, setTelloOpen] = useState(false);
 
   const fetchUserProgress = async () => {
     try {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
+
+      setProfile(readProfile(user));
 
       const { data, error } = await supabase
         .from('caregiver_training_progress')
@@ -99,8 +133,49 @@ export default function TrainingDashboard() {
           </div>
         </header>
 
+        {/* Title22 add-ons — each button appears only when its flag is on */}
+        {(FeatureFlags.enableBriefing || FeatureFlags.enableTello) && (
+          <nav className="flex flex-wrap items-center gap-2">
+            {FeatureFlags.enableBriefing && (
+              <>
+                <button
+                  onClick={() => setCurrentTab('training')}
+                  className={`px-4 py-2 rounded-lg text-sm font-semibold transition-colors ${
+                    currentTab === 'training' ? 'bg-blue-600 text-white' : 'bg-white border hover:bg-slate-100'
+                  }`}
+                >
+                  Courses
+                </button>
+                <button
+                  onClick={() => setCurrentTab('briefing')}
+                  className={`px-4 py-2 rounded-lg text-sm font-semibold transition-colors ${
+                    currentTab === 'briefing' ? 'bg-blue-600 text-white' : 'bg-white border hover:bg-slate-100'
+                  }`}
+                >
+                  🌅 Briefing
+                </button>
+              </>
+            )}
+
+            {FeatureFlags.enableTello && (
+              <button
+                onClick={() => setTelloOpen(true)}
+                className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-semibold text-sm ml-auto"
+              >
+                Ask Tello
+              </button>
+            )}
+          </nav>
+        )}
+
+        {profile.isPartnerAdmin && <FeatureFlagAdmin />}
+
+        {FeatureFlags.enableBriefing && currentTab === 'briefing' && (
+          <MorningBriefing facilityId={profile.facilityId} />
+        )}
+
         {/* Course Training Grid */}
-        <div className="grid gap-6 sm:grid-cols-2">
+        <div className={`grid gap-6 sm:grid-cols-2 ${currentTab === 'training' ? '' : 'hidden'}`}>
           {COMPLIANCE_COURSES.map((course) => {
             const track = progress[course.id] || { hours_completed: 0, quiz_passed: false };
             const completionPercent = Math.min(100, Math.round((track.hours_completed / course.requiredHours) * 100));
@@ -163,7 +238,16 @@ export default function TrainingDashboard() {
             }}
           />
         )}
-        
+
+        {FeatureFlags.enableTello && (
+          <TelloDrawer
+            isOpen={telloOpen}
+            onClose={() => setTelloOpen(false)}
+            facilityId={profile.facilityId}
+            userRole={profile.roles}
+          />
+        )}
+
       </div>
     </div>
   );
