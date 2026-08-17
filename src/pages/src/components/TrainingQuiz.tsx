@@ -106,7 +106,6 @@ export default function TrainingQuiz({ courseId, hoursToEarn, onClose }: QuizPro
     <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
       <div className="bg-white w-full max-w-lg rounded-2xl shadow-xl overflow-hidden border flex flex-col">
         
-        {/* Header Banner */}
         <div className="bg-slate-950 p-4 text-white flex justify-between items-center">
           <span className="text-xs font-bold uppercase tracking-wider text-blue-400">Title 22 Quiz Engine</span>
           <button onClick={onClose} className="text-slate-400 hover:text-white transition-colors">✕</button>
