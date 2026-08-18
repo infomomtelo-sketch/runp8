@@ -3,12 +3,62 @@ import { COURSES_DATA } from './coursesData';
 
 export default function App() {
   const [filter, setFilter] = useState('All Status');
+  const [activeQuizId, setActiveQuizId] = useState<number | null>(null);
   
-  // We add 'Completed' default status here to keep the visual green dot working
-  const [courses] = useState(
+  const [courses, setCourses] = useState(
     COURSES_DATA.map(course => ({ ...course, defaultStatus: 'Completed' }))
   );
 
+  // Find the details of whichever course module is currently selected
+  const activeCourse = courses.find(c => c.id === activeQuizId);
+
+  // 📝 Sub-Component: Dynamic Quiz Window
+  if (activeQuizId && activeCourse) {
+    return (
+      <div className="min-h-screen bg-gray-50 p-4 md:p-8 font-sans antialiased text-gray-800">
+        <div className="max-w-3xl mx-auto bg-white rounded-xl p-6 shadow-sm border border-gray-100">
+          
+          {/* Quiz Navigation Header */}
+          <div className="flex justify-between items-center mb-6 pb-4 border-b">
+            <div>
+              <span className="text-[10px] font-bold text-blue-600 uppercase tracking-wider">Title 22 Compliance Training</span>
+              <h1 className="text-lg font-bold text-gray-900 leading-tight mt-0.5">{activeCourse.title}</h1>
+            </div>
+            <button 
+              onClick={() => setActiveQuizId(null)}
+              className="text-xs font-semibold text-gray-500 hover:text-gray-800 bg-gray-100 hover:bg-gray-200 px-3 py-1.5 rounded-lg transition"
+            >
+              ← Back to Dashboard
+            </button>
+          </div>
+
+          {/* Interactive Placeholder Sandbox for your TrainingQuiz content */}
+          <div className="bg-blue-50/30 border border-dashed border-blue-200 rounded-xl p-8 text-center my-6">
+            <p className="text-sm text-blue-900 font-semibold mb-1">Interactive Video Framework & Assessment Portal</p>
+            <p className="text-xs text-gray-500 max-w-md mx-auto">
+              This sandbox component serves as the gateway to stream the required video modules and launch the certified verification test questions for compliance credit.
+            </p>
+          </div>
+
+          {/* Quiz Action Block */}
+          <div className="flex justify-end pt-4 border-t">
+            <button 
+              onClick={() => {
+                alert(`Assessment completed for: ${activeCourse.title}`);
+                setActiveQuizId(null);
+              }}
+              className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs rounded-lg shadow-sm transition"
+            >
+              Submit Completed Assessment
+            </button>
+          </div>
+
+        </div>
+      </div>
+    );
+  }
+
+  // 🗂️ Main Component: Courses Dashboard View
   return (
     <div className="min-h-screen bg-gray-50 p-4 md:p-8 font-sans antialiased text-gray-800">
       <div className="max-w-7xl mx-auto bg-white rounded-xl p-6 shadow-sm border border-gray-100">
@@ -20,7 +70,6 @@ export default function App() {
               Courses ({courses.length})
             </h1>
             
-            {/* View Toggle Icons Anchor */}
             <div className="flex items-center gap-1.5 text-gray-400">
               <button className="p-1 hover:text-blue-600 transition" title="List view">
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -65,7 +114,6 @@ export default function App() {
                 key={course.id} 
                 className="border border-blue-100/70 rounded-xl p-4 bg-blue-50/20 hover:bg-blue-50/40 transition-colors duration-150 flex flex-col justify-between min-h-[145px]"
               >
-                {/* Course Metadata */}
                 <div>
                   <h3 className="font-bold text-xs text-blue-950 leading-tight tracking-tight mb-1">
                     {course.title}
@@ -83,7 +131,7 @@ export default function App() {
                   </span>
                   
                   <button 
-                    onClick={() => alert(`Launching ${course.title}`)}
+                    onClick={() => setActiveQuizId(course.id)}
                     className="text-blue-600 font-bold hover:text-blue-800 transition tracking-wide"
                   >
                     Go
