@@ -1,26 +1,13 @@
 import React, { useState } from 'react';
-
-// The 14 Mandatory Title 22 Caregiver Courses
-const TITLE_22_COURSES = [
-  { id: 1, title: "Dementia Care: This Is Your Brain on Music", hours: "1 hour", defaultStatus: "Completed" },
-  { id: 2, title: "Dementia-Related Behaviors", hours: "3 hours", defaultStatus: "Completed" },
-  { id: 3, title: "Dementia: Causes, Symptoms and Types", hours: "2 hours", defaultStatus: "Completed" },
-  { id: 4, title: "Dementia: Getting Through the Day", hours: "2 hours", defaultStatus: "Completed" },
-  { id: 5, title: "Hospice Care for RCFE", hours: "2 hours", defaultStatus: "Completed" },
-  { id: 6, title: "Infection Control", hours: "1 hour", defaultStatus: "Completed" },
-  { id: 7, title: "Managing Aggressive Behaviors", hours: "0.5 hour", defaultStatus: "Completed" },
-  { id: 8, title: "Osteoporosis", hours: "2 hours", defaultStatus: "Completed" },
-  { id: 9, title: "Physical Changes in Aging", hours: "1 hour", defaultStatus: "Completed" },
-  { id: 10, title: "Postural Supports in RCFE", hours: "2 hours", defaultStatus: "Completed" },
-  { id: 11, title: "Psychosocial Needs of Elders", hours: "2 hours", defaultStatus: "Completed" },
-  { id: 12, title: "Recognizing and Reporting Abuse", hours: "1 hour", defaultStatus: "Completed" },
-  { id: 13, title: "Residents' Rights in RCFE", hours: "1 hour", defaultStatus: "Completed" },
-  { id: 14, title: "Restricted and Prohibited Conditions RCFE", hours: "1 hour", defaultStatus: "Completed" }
-];
+import { COURSES_DATA } from './coursesData';
 
 export default function App() {
   const [filter, setFilter] = useState('All Status');
-  const [courses] = useState(TITLE_22_COURSES);
+  
+  // We add 'Completed' default status here to keep the visual green dot working
+  const [courses] = useState(
+    COURSES_DATA.map(course => ({ ...course, defaultStatus: 'Completed' }))
+  );
 
   return (
     <div className="min-h-screen bg-gray-50 p-4 md:p-8 font-sans antialiased text-gray-800">
