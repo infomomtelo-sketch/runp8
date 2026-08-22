@@ -1,46 +1,22 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { supabase } from '../integrations/supabase/client';
 
-// 🆕 Real Video Data Added Here
+// 14 Mandatory Title 22 Caregiver Courses with active streaming test links
 const TRAINING_COURSES = [
-  { 
-    id: 1, 
-    title: "Dementia Care: This Is Your Brain on Music", 
-    duration: "1 Hour", 
-    type: "Core",
-    videoUrl: "https://googleapis.com" 
-  },
-  { 
-    id: 2, 
-    title: "Dementia-Related Behaviors & Communication", 
-    duration: "3 Hours", 
-    type: "Core",
-    videoUrl: "https://googleapis.com" 
-  },
-  { 
-    id: 3, 
-    title: "Infection Control & Safety Protocols", 
-    duration: "1 Hour", 
-    type: "Core",
-    videoUrl: "https://googleapis.com" 
-  },
-  { 
-    id: 4, 
-    title: "Residents' Rights in RCFE", 
-    duration: "1 Hour", 
-    type: "Core",
-    videoUrl: "https://googleapis.com" 
-  },
-  { id: 5, title: "Postural Supports & Restraints Guidelines", duration: "1 Hour", type: "Core", videoUrl: "" },
-  { id: 6, title: "Medication Management & Safety", duration: "2 Hours", type: "Core", videoUrl: "" },
-  { id: 7, title: "Assisting with Activities of Daily Living (ADLs)", duration: "2 Hours", type: "Core", videoUrl: "" },
-  { id: 8, title: "Emergency Preparedness & Disaster Plans", duration: "1 Hour", type: "Core", videoUrl: "" },
-  { id: 9, title: "Food Safety and Nutritional Requirements", duration: "1 Hour", type: "Elective", videoUrl: "" },
-  { id: 10, title: "Reporting Requirements & Abuse Prevention", duration: "1 Hour", type: "Core", videoUrl: "" },
-  { id: 11, title: "Psychosocial Needs of the Elderly", duration: "1 Hour", type: "Elective", videoUrl: "" },
-  { id: 12, title: "Basic First Aid & Physical Environment Safety", duration: "1 Hour", type: "Core", videoUrl: "" },
-  { id: 13, title: "Caregiver Boundaries & Ethics", duration: "1 Hour", type: "Elective", videoUrl: "" },
-  { id: 14, title: "Hospice Care and Comfort Protocols", duration: "2 Hours", type: "Elective", videoUrl: "" }
+  { id: 1, title: "Dementia Care: This Is Your Brain on Music", duration: "1 Hour", type: "Core", videoUrl: "https://googleapis.com" },
+  { id: 2, title: "Dementia-Related Behaviors & Communication", duration: "3 Hours", type: "Core", videoUrl: "https://googleapis.com" },
+  { id: 3, title: "Infection Control & Safety Protocols", duration: "1 Hour", type: "Core", videoUrl: "https://googleapis.com" },
+  { id: 4, title: "Residents' Rights in RCFE", duration: "1 Hour", type: "Core", videoUrl: "https://googleapis.com" },
+  { id: 5, title: "Postural Supports & Restraints Guidelines", duration: "1 Hour", type: "Core", videoUrl: "https://googleapis.com" },
+  { id: 6, title: "Medication Management & Safety", duration: "2 Hours", type: "Core", videoUrl: "https://googleapis.com" },
+  { id: 7, title: "Assisting with Activities of Daily Living (ADLs)", duration: "2 Hours", type: "Core", videoUrl: "https://googleapis.com" },
+  { id: 8, title: "Emergency Preparedness & Disaster Plans", duration: "1 Hour", type: "Core", videoUrl: "https://googleapis.com" },
+  { id: 9, title: "Food Safety and Nutritional Requirements", duration: "1 Hour", type: "Elective", videoUrl: "https://googleapis.com" },
+  { id: 10, title: "Reporting Requirements & Abuse Prevention", duration: "1 Hour", type: "Core", videoUrl: "https://googleapis.com" },
+  { id: 11, title: "Psychosocial Needs of the Elderly", duration: "1 Hour", type: "Elective", videoUrl: "https://googleapis.com" },
+  { id: 12, title: "Basic First Aid & Physical Environment Safety", duration: "1 Hour", type: "Core", videoUrl: "https://googleapis.com" },
+  { id: 13, title: "Caregiver Boundaries & Ethics", duration: "1 Hour", type: "Elective", videoUrl: "https://googleapis.com" },
+  { id: 14, title: "Hospice Care and Comfort Protocols", duration: "2 Hours", type: "Elective", videoUrl: "https://googleapis.com" }
 ];
 
 export default function TrainingVideos() {
@@ -137,9 +113,9 @@ export default function TrainingVideos() {
         <div className="lg:col-span-2 space-y-4">
           <div className="relative bg-black rounded-xl overflow-hidden aspect-video shadow-md border border-gray-900">
             <video 
-              key={activeVideo.id} // Forces video source to refresh instantly on click
+              key={activeVideo.id} 
               ref={videoRef}
-              src={activeVideo.videoUrl || "https://googleapis.com"}
+              src={activeVideo.videoUrl}
               controls
               onTimeUpdate={handleTimeUpdate}
               className="w-full h-full object-contain"
