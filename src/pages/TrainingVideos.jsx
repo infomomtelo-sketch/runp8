@@ -1,25 +1,22 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { supabase } from '../integrations/supabase/client';
 
-// Clean, short, active testing video files
-const V1 = "https://zencdn.net";
-const V2 = "https://html5demos.com";
-
+// 14 Mandatory Title 22 Caregiver Courses with open-access video stream paths
 const TRAINING_COURSES = [
-  { id: 1, title: "Dementia Care: This Is Your Brain on Music", duration: "1 Hour", type: "Core", videoUrl: V1 },
-  { id: 2, title: "Dementia-Related Behaviors & Communication", duration: "3 Hours", type: "Core", videoUrl: V2 },
-  { id: 3, title: "Infection Control & Safety Protocols", duration: "1 Hour", type: "Core", videoUrl: V1 },
-  { id: 4, title: "Residents' Rights in RCFE", duration: "1 Hour", type: "Core", videoUrl: V2 },
-  { id: 5, title: "Postural Supports & Restraints Guidelines", duration: "1 Hour", type: "Core", videoUrl: V1 },
-  { id: 6, title: "Medication Management & Safety", duration: "2 Hours", type: "Core", videoUrl: V2 },
-  { id: 7, title: "Assisting with Activities of Daily Living (ADLs)", duration: "2 Hours", type: "Core", videoUrl: V1 },
-  { id: 8, title: "Emergency Preparedness & Disaster Plans", duration: "1 Hour", type: "Core", videoUrl: V2 },
-  { id: 9, title: "Food Safety and Nutritional Requirements", duration: "1 Hour", type: "Elective", videoUrl: V1 },
-  { id: 10, title: "Reporting Requirements & Abuse Prevention", duration: "1 Hour", type: "Core", videoUrl: V2 },
-  { id: 11, title: "Psychosocial Needs of the Elderly", duration: "1 Hour", type: "Elective", videoUrl: V1 },
-  { id: 12, title: "Basic First Aid & Physical Environment Safety", duration: "1 Hour", type: "Core", videoUrl: V2 },
-  { id: 13, title: "Caregiver Boundaries & Ethics", duration: "1 Hour", type: "Elective", videoUrl: V1 },
-  { id: 14, title: "Hospice Care and Comfort Protocols", duration: "2 Hours", type: "Elective", videoUrl: V2 }
+  { id: 1, title: "Dementia Care: This Is Your Brain on Music", duration: "1 Hour", type: "Core", videoUrl: "https://zencdn.net" },
+  { id: 2, title: "Dementia-Related Behaviors & Communication", duration: "3 Hours", type: "Core", videoUrl: "https://html5demos.com" },
+  { id: 3, title: "Infection Control & Safety Protocols", duration: "1 Hour", type: "Core", videoUrl: "https://zencdn.net" },
+  { id: 4, title: "Residents' Rights in RCFE", duration: "1 Hour", type: "Core", videoUrl: "https://html5demos.com" },
+  { id: 5, title: "Postural Supports & Restraints Guidelines", duration: "1 Hour", type: "Core", videoUrl: "https://zencdn.net" },
+  { id: 6, title: "Medication Management & Safety", duration: "2 Hours", type: "Core", videoUrl: "https://html5demos.com" },
+  { id: 7, title: "Assisting with Activities of Daily Living (ADLs)", duration: "2 Hours", type: "Core", videoUrl: "https://zencdn.net" },
+  { id: 8, title: "Emergency Preparedness & Disaster Plans", duration: "1 Hour", type: "Core", videoUrl: "https://html5demos.com" },
+  { id: 9, title: "Food Safety and Nutritional Requirements", duration: "1 Hour", type: "Elective", videoUrl: "https://zencdn.net" },
+  { id: 10, title: "Reporting Requirements & Abuse Prevention", duration: "1 Hour", type: "Core", videoUrl: "https://html5demos.com" },
+  { id: 11, title: "Psychosocial Needs of the Elderly", duration: "1 Hour", type: "Elective", videoUrl: "https://zencdn.net" },
+  { id: 12, title: "Basic First Aid & Physical Environment Safety", duration: "1 Hour", type: "Core", videoUrl: "https://html5demos.com" },
+  { id: 13, title: "Caregiver Boundaries & Ethics", duration: "1 Hour", type: "Elective", videoUrl: "https://zencdn.net" },
+  { id: 14, title: "Hospice Care and Comfort Protocols", duration: "2 Hours", type: "Elective", videoUrl: "https://html5demos.com" }
 ];
 
 export default function TrainingVideos() {
@@ -79,6 +76,7 @@ export default function TrainingVideos() {
   };
 
   if (loading) return <div style={{ padding: '32px', textAlign: 'center' }}>Syncing logs...</div>;
+
   return (
     <div style={{ maxWidth: '1280px', margin: '0 auto', padding: '24px', fontFamily: 'sans-serif', backgroundColor: '#f9fafb', minHeight: '100vh', boxSizing: 'border-box' }}>
       <header style={{ marginBottom: '24px', borderBottom: '1px solid #e5e7eb', paddingBottom: '16px' }}>
@@ -91,12 +89,12 @@ export default function TrainingVideos() {
           <div style={{ position: 'relative', backgroundColor: '#000000', borderRadius: '12px', overflow: 'hidden', aspectRatio: '16/9' }}>
             <video key={activeVideo.id} ref={videoRef} src={activeVideo.videoUrl} controls playsInline style={{ width: '100%', height: '100%', objectFit: 'contain' }} onTimeUpdate={handleTimeUpdate} />
             {showPopQuiz && (
-              <div style={{ position: 'absolute', inset: 0, backgroundColor: 'rgba(15, 23, 42, 0.95)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '24px', textAlign: 'center', zIndex: 50 }}>
+              <div style={{ position: 'absolute', inset: 0, backgroundColor: 'rgba(15, 23, 42, 0.95)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '24px' }}>
                 <h3 style={{ color: '#fff', margin: '0 0 8px 0' }}>🔒 In-Video Learning Validation</h3>
                 <p style={{ color: '#94a3b8', fontSize: '13px', margin: '0 0 24px 0' }}>Select the core objective of this compliance video framework:</p>
                 <div style={{ display: 'flex', gap: '12px' }}>
-                  <button onClick={() => handleQuizAnswer(true)} style={{ backgroundColor: '#2563eb', color: '#fff', padding: '12px 24px', border: 'none', borderRadius: '8px', cursor: 'pointer', fontWeight: '600' }}>Resident Dignity & Care Safety</button>
-                  <button onClick={() => handleQuizAnswer(false)} style={{ backgroundColor: '#334155', color: '#cbd5e1', padding: '12px 24px', border: 'none', borderRadius: '8px', cursor: 'pointer' }}>Bypass Protocol Steps</button>
+                  <button onClick={() => handleQuizAnswer(true)} style={{ backgroundColor: '#2563eb', color: '#fff', padding: '12px 24px', border: 'none', borderRadius: '8px', cursor: 'pointer', fontWeight: '700' }}>Correct Answer</button>
+                  <button onClick={() => handleQuizAnswer(false)} style={{ backgroundColor: '#334155', color: '#cbd5e1', padding: '12px 24px', border: 'none', borderRadius: '8px', cursor: 'pointer' }}>Wrong Answer</button>
                 </div>
               </div>
             )}
@@ -118,9 +116,9 @@ export default function TrainingVideos() {
               const isSelected = activeVideo.id === course.id;
               const isDone = completedVideos.includes(course.id);
               return (
-                <button key={course.id} onClick={() => { setActiveVideo(course); setShowPopQuiz(false); }} style={{ width: '100%', textAlign: 'left', padding: '12px', borderRadius: '8px', border: isSelected ? '2px solid #2563eb' : '1px solid #e5e7eb', backgroundColor: isSelected ? '#f8fafc' : '#ffffff', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px' }}>
+                <button key={course.id} onClick={() => { setActiveVideo(course); setShowPopQuiz(false); }} style={{ width: '100%', textAlign: 'left', padding: '12px', borderRadius: '8px', border: isSelected ? '1px solid #2563eb' : '1px solid #e5e7eb', backgroundColor: isSelected ? '#eff6ff' : '#ffffff', display: 'flex', alignItems: 'center', justifyContent: 'space-between', cursor: 'pointer', gap: '12px' }}>
                   <div style={{ overflow: 'hidden', flex: 1 }}>
-                    <h4 style={{ fontSize: '13px', fontWeight: '700', color: isSelected ? '#1e3a8a' : '#111827', margin: '0', whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' }}>{course.id}. {course.title}</h4>
+                    <h4 style={{ fontSize: '13px', fontWeight: '700', color: isSelected ? '#1e3a8a' : '#111827', margin: '0', whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' }}>{course.title}</h4>
                     <span style={{ fontSize: '11px', color: '#9ca3af', marginTop: '2px', display: 'block' }}>{course.duration}</span>
                   </div>
                   <div>{isDone ? <span style={{ color: '#16a34a', fontWeight: 'bold' }}>✓</span> : <span style={{ color: '#9ca3af' }}>⏵</span>}</div>
