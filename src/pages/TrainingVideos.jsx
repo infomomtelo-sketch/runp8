@@ -1,7 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { supabase } from '../integrations/supabase/client';
 
-// 14 Mandatory Title 22 Caregiver Courses with real working video file links
 const TRAINING_COURSES = [
   { id: 1, title: "Dementia Care: This Is Your Brain on Music", duration: "1 Hour", type: "Core", videoUrl: "https://googleapis.com" },
   { id: 2, title: "Dementia-Related Behaviors & Communication", duration: "3 Hours", type: "Core", videoUrl: "https://googleapis.com" },
@@ -31,17 +30,11 @@ export default function TrainingVideos() {
       try {
         const { data: { user } } = await supabase.auth.getUser();
         if (!user) return;
-
-        const { data, error } = await supabase
-          .from('caregiver_training_progress')
-          .select('course_id');
-
+        const { data, error } = await supabase.from('caregiver_training_progress').select('course_id');
         if (error) throw error;
-        if (data) {
-          setCompletedVideos(data.map(row => row.course_id));
-        }
+        if (data) setCompletedVideos(data.map(row => row.course_id));
       } catch (err) {
-        console.error("Error loading progress:", err.message);
+        console.error("Error logs:", err.message);
       } finally {
         setLoading(false);
       }
@@ -59,27 +52,12 @@ export default function TrainingVideos() {
 
   const saveProgressToSupabase = async (courseId, courseTitle) => {
     try {
-      const { data: { user }, error: authError } = await supabase.auth.getUser();
-      if (authError || !user) {
-        alert("🔒 Auth Error: Please log in to save your training progress!");
-        return;
-      }
-
-      const { error } = await supabase
-        .from('caregiver_training_progress')
-        .upsert({ 
-          user_id: user.id, 
-          course_id: courseId, 
-          course_title: courseTitle 
-        }, { onConflict: 'user_id,course_id' });
-
-      if (error) {
-        alert(`❌ Supabase Error: ${error.message}`);
-        throw error;
-      }
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+      await supabase.from('caregiver_training_progress').upsert({ user_id: user.id, course_id: courseId, course_title: courseTitle }, { onConflict: 'user_id,course_id' });
       alert("✅ Success! Progress saved.");
     } catch (err) {
-      console.error("Database save failed:", err.message);
+      console.error(err.message);
     }
   };
 
@@ -87,92 +65,61 @@ export default function TrainingVideos() {
     if (isCorrect) {
       setShowPopQuiz(false);
       videoRef.current.play();
-      
       if (!completedVideos.includes(activeVideo.id)) {
-        const updated = [...completedVideos, activeVideo.id];
-        setCompletedVideos(updated);
+        setCompletedVideos([...completedVideos, activeVideo.id]);
         await saveProgressToSupabase(activeVideo.id, activeVideo.title);
       }
     } else {
-      alert("Incorrect answer. Try again to resume video.");
+      alert("Incorrect answer. Try again.");
     }
   };
 
-  if (loading) {
-    return <div className="p-8 text-center text-sm font-medium text-gray-500">Syncing training logs...</div>;
-  }
-
+  if (loading) return <div style={{ padding: '32px', textAlign: 'center' }}>Syncing logs...</div>;
   return (
-    <div className="max-w-7xl mx-auto p-4 md:p-6 font-sans text-gray-900 bg-gray-50/50 rounded-2xl border border-gray-100">
-      <header className="mb-6">
-        <span className="text-[10px] font-bold text-blue-600 uppercase tracking-widest">Title 22 California RCFE Compliance</span>
-        <h1 className="text-2xl font-bold tracking-tight text-gray-900 mt-1">Interactive Video Learning Portal</h1>
+    <div style={{ maxWidth: '1280px', margin: '0 auto', padding: '24px', fontFamily: 'sans-serif', backgroundColor: '#f9fafb', minHeight: '100vh', boxSizing: 'border-box' }}>
+      <header style={{ marginBottom: '24px', borderBottom: '1px solid #e5e7eb', paddingBottom: '16px' }}>
+        <span style={{ fontSize: '11px', fontWeight: 'bold', color: '#2563eb' }}>TITLE 22 CALIFORNIA COMPLIANCE</span>
+        <h1 style={{ fontSize: '24px', fontWeight: '800', color: '#111827', margin: '4px 0 0 0' }}>Interactive Video Training Dashboard</h1>
       </header>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2 space-y-4">
-          <div className="relative bg-black rounded-xl overflow-hidden aspect-video shadow-md border border-gray-900">
-            <video 
-              key={activeVideo.id} 
-              ref={videoRef}
-              src={activeVideo.videoUrl}
-              controls
-              playsInline
-              className="w-full h-full object-contain"
-              onTimeUpdate={handleTimeUpdate}
-            />
-
+      <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '24px', alignItems: 'start' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+          <div style={{ position: 'relative', backgroundColor: '#000000', borderRadius: '12px', overflow: 'hidden', aspectRatio: '16/9' }}>
+            <video key={activeVideo.id} ref={videoRef} src={activeVideo.videoUrl} controls playsInline style={{ width: '100%', height: '100%', objectFit: 'contain' }} onTimeUpdate={handleTimeUpdate} />
             {showPopQuiz && (
-              <div className="absolute inset-0 bg-slate-950/95 flex flex-col items-center justify-center p-6 text-center">
-                <h3 className="text-base font-bold text-white">🔒 In-Video Learning Validation</h3>
-                <p className="text-xs text-slate-400 max-w-sm mt-2 mb-6">Select the core objective of this compliance video framework:</p>
-                <div className="flex flex-col sm:flex-row gap-2.5 w-full max-w-md px-4">
-                  <button onClick={() => handleQuizAnswer(true)} className="flex-1 text-xs font-semibold bg-blue-600 text-white py-3 px-4 rounded-xl shadow">
-                    Resident Dignity & Care Safety
-                  </button>
-                  <button onClick={() => handleQuizAnswer(false)} className="flex-1 text-xs font-semibold bg-slate-800 text-slate-300 py-3 px-4 rounded-xl border border-slate-700">
-                    Bypass Protocol Steps
-                  </button>
+              <div style={{ position: 'absolute', inset: 0, backgroundColor: 'rgba(15, 23, 42, 0.95)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '24px', textAlign: 'center', zIndex: 50 }}>
+                <h3 style={{ color: '#fff', margin: '0 0 8px 0' }}>🔒 In-Video Learning Validation</h3>
+                <p style={{ color: '#94a3b8', fontSize: '13px', margin: '0 0 24px 0' }}>Select the core objective of this compliance video framework:</p>
+                <div style={{ display: 'flex', gap: '12px' }}>
+                  <button onClick={() => handleQuizAnswer(true)} style={{ backgroundColor: '#2563eb', color: '#fff', padding: '12px 24px', border: 'none', borderRadius: '8px', cursor: 'pointer', fontWeight: '600' }}>Resident Dignity & Care Safety</button>
+                  <button onClick={() => handleQuizAnswer(false)} style={{ backgroundColor: '#334155', color: '#cbd5e1', padding: '12px 24px', border: 'none', borderRadius: '8px', cursor: 'pointer' }}>Bypass Protocol Steps</button>
                 </div>
               </div>
             )}
           </div>
-
-          <div className="bg-white p-4 rounded-xl border border-gray-100 shadow-sm flex flex-col sm:flex-row justify-between items-start sm:items-center">
-            <div>
-              <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 uppercase">{activeVideo.type} Module</span>
-              <h2 className="text-base font-bold text-gray-900 mt-1.5">{activeVideo.title}</h2>
-              <p className="text-xs text-gray-400 mt-0.5">Required Track Time: {activeVideo.duration}</p>
-            </div>
+          <div style={{ backgroundColor: '#ffffff', padding: '20px', borderRadius: '12px', border: '1px solid #e5e7eb' }}>
+            <span style={{ fontSize: '11px', fontWeight: 'bold', color: '#2563eb', backgroundColor: '#eff6ff', padding: '4px 8px', borderRadius: '9999px' }}>{activeVideo.type} Module</span>
+            <h2 style={{ fontSize: '18px', fontWeight: 'bold', margin: '12px 0 4px 0' }}>{activeVideo.title}</h2>
+            <p style={{ fontSize: '13px', color: '#6b7280', margin: '0' }}>Required Track Time: {activeVideo.duration}</p>
           </div>
         </div>
 
-        <div className="bg-white p-4 rounded-xl border border-gray-100 shadow-sm flex flex-col h-[520px]">
-          <div className="mb-4 pb-2 border-b border-gray-100 flex justify-between items-center">
-            <h3 className="font-bold text-xs uppercase tracking-wider text-gray-500">Modules Completed</h3>
-            <span className="text-xs font-bold text-blue-600 bg-blue-50 px-2.5 py-0.5 rounded-full">{completedVideos.length} / 14</span>
+        <div style={{ backgroundColor: '#ffffff', padding: '20px', borderRadius: '12px', border: '1px solid #e5e7eb', display: 'flex', flexDirection: 'column', maxHeight: '580px' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', borderBottom: '1px solid #f3f4f6', paddingBottom: '12px' }}>
+            <h3 style={{ fontSize: '12px', fontWeight: 'bold', color: '#6b7280', margin: '0' }}>Modules Tracker</h3>
+            <span style={{ fontSize: '12px', fontWeight: 'bold', color: '#2563eb', backgroundColor: '#eff6ff', padding: '2px 8px', borderRadius: '9999px' }}>{completedVideos.length} / 14</span>
           </div>
-
-          <div className="overflow-y-auto space-y-2 flex-1 pr-1">
+          <div style={{ overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '8px', flex: '1' }}>
             {TRAINING_COURSES.map((course) => {
               const isSelected = activeVideo.id === course.id;
               const isDone = completedVideos.includes(course.id);
               return (
-                <button
-                  key={course.id}
-                  onClick={() => {
-                    setActiveVideo(course);
-                    setShowPopQuiz(false);
-                  }}
-                  className={`w-full text-left p-3 rounded-xl border transition-all flex items-center justify-between gap-3 ${
-                    isSelected ? 'border-blue-600 bg-blue-50/40 shadow-sm' : 'border-gray-100 bg-white hover:bg-gray-50'
-                  }`}
-                >
-                  <div className="min-w-0 flex-1">
-                    <h4 className={`text-xs font-bold truncate ${isSelected ? 'text-blue-950' : 'text-gray-900'}`}>{course.id}. {course.title}</h4>
-                    <span className="text-[10px] text-gray-400 font-medium">{course.duration}</span>
+                <button key={course.id} onClick={() => { setActiveVideo(course); setShowPopQuiz(false); }} style={{ width: '100%', textAlign: 'left', padding: '12px', borderRadius: '8px', border: isSelected ? '2px solid #2563eb' : '1px solid #e5e7eb', backgroundColor: isSelected ? '#f8fafc' : '#ffffff', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px' }}>
+                  <div style={{ overflow: 'hidden', flex: 1 }}>
+                    <h4 style={{ fontSize: '13px', fontWeight: '700', color: isSelected ? '#1e3a8a' : '#111827', margin: '0', whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' }}>{course.id}. {course.title}</h4>
+                    <span style={{ fontSize: '11px', color: '#9ca3af', marginTop: '2px', display: 'block' }}>{course.duration}</span>
                   </div>
-                  <div>{isDone ? <span className="text-green-600 text-xs font-bold">✓</span> : <span className="text-gray-400 text-xs">⏵</span>}</div>
+                  <div>{isDone ? <span style={{ color: '#16a34a', fontWeight: 'bold' }}>✓</span> : <span style={{ color: '#9ca3af' }}>⏵</span>}</div>
                 </button>
               );
             })}
