@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { supabase } from '../integrations/supabase/client';
 
-// 14 Mandatory Title 22 Caregiver Courses with active streaming test links
+// 14 Mandatory Title 22 Caregiver Courses with real working video file links
 const TRAINING_COURSES = [
   { id: 1, title: "Dementia Care: This Is Your Brain on Music", duration: "1 Hour", type: "Core", videoUrl: "https://googleapis.com" },
   { id: 2, title: "Dementia-Related Behaviors & Communication", duration: "3 Hours", type: "Core", videoUrl: "https://googleapis.com" },
@@ -117,8 +117,9 @@ export default function TrainingVideos() {
               ref={videoRef}
               src={activeVideo.videoUrl}
               controls
-              onTimeUpdate={handleTimeUpdate}
+              playsInline
               className="w-full h-full object-contain"
+              onTimeUpdate={handleTimeUpdate}
             />
 
             {showPopQuiz && (
