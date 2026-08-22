@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import { COURSES_DATA } from './coursesData';
+import TrainingVideos from './pages/TrainingVideos'; // Imported your new file
 
 export default function App() {
   const [filter, setFilter] = useState('All Status');
   const [activeQuizId, setActiveQuizId] = useState<number | null>(null);
+  const [currentView, setCurrentView] = useState<'dashboard' | 'videos'>('dashboard'); // Tracks active page view
   
   const [courses, setCourses] = useState(
     COURSES_DATA.map(course => ({ ...course, defaultStatus: 'Completed' }))
@@ -12,7 +14,24 @@ export default function App() {
   // Find the details of whichever course module is currently selected
   const activeCourse = courses.find(c => c.id === activeQuizId);
 
-  // 📝 Sub-Component: Dynamic Quiz Window
+  // 🎥 View Condition 1: Show Interactive Training Videos Page
+  if (currentView === 'videos') {
+    return (
+      <div className="min-h-screen bg-gray-50 p-4 md:p-8 font-sans antialiased text-gray-800">
+        <div className="max-w-7xl mx-auto">
+          <button 
+            onClick={() => setCurrentView('dashboard')}
+            className="mb-4 inline-flex items-center text-xs font-bold text-blue-600 hover:text-blue-800 bg-white border border-blue-200 px-4 py-2 rounded-xl shadow-sm transition"
+          >
+            ← Back to Main Dashboard
+          </button>
+          <TrainingVideos />
+        </div>
+      </div>
+    );
+  }
+
+  // 📝 View Condition 2: Dynamic Quiz Window
   if (activeQuizId && activeCourse) {
     return (
       <div className="min-h-screen bg-gray-50 p-4 md:p-8 font-sans antialiased text-gray-800">
@@ -58,29 +77,41 @@ export default function App() {
     );
   }
 
-  // 🗂️ Main Component: Courses Dashboard View
+  // 🗂️ View Condition 3: Main Courses Dashboard View
   return (
     <div className="min-h-screen bg-gray-50 p-4 md:p-8 font-sans antialiased text-gray-800">
       <div className="max-w-7xl mx-auto bg-white rounded-xl p-6 shadow-sm border border-gray-100">
         
         {/* Header Block */}
         <div className="mb-6 pb-4 border-b border-gray-100">
-          <div className="flex justify-between items-center mb-4">
-            <h1 className="text-xl font-bold tracking-tight text-gray-900">
-              Courses ({courses.length})
-            </h1>
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
+            <div>
+              <h1 className="text-xl font-bold tracking-tight text-gray-900">
+                Courses ({courses.length})
+              </h1>
+            </div>
             
-            <div className="flex items-center gap-1.5 text-gray-400">
-              <button className="p-1 hover:text-blue-600 transition" title="List view">
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-                </svg>
+            {/* 🆕 Navigation Trigger for Videos */}
+            <div className="flex items-center gap-4 w-full sm:w-auto justify-between sm:justify-end">
+              <button
+                onClick={() => setCurrentView('videos')}
+                className="inline-flex items-center gap-1.5 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded-xl shadow-sm transition"
+              >
+                🎥 Launch Interactive Training Videos
               </button>
-              <button className="p-1 text-blue-600 transition" title="Grid view">
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 10h16M4 14h16M4 18h16" />
-                </svg>
-              </button>
+
+              <div className="flex items-center gap-1.5 text-gray-400">
+                <button className="p-1 hover:text-blue-600 transition" title="List view">
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                  </svg>
+                </button>
+                <button className="p-1 text-blue-600 transition" title="Grid view">
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 10h16M4 14h16M4 18h16" />
+                  </svg>
+                </button>
+              </div>
             </div>
           </div>
           
@@ -105,7 +136,7 @@ export default function App() {
           </div>
         </div>
 
-        {/* 1992 Clean Grid Layout */}
+        {/* Grid Layout */}
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
           {courses
             .filter(c => filter === 'All Status' || c.defaultStatus === filter)
